@@ -117,12 +117,18 @@ solution options set Flows/QuestaSIM/SCCOM_OPTS {-64 -g -x c++ -Wall -Wno-unused
 solution options set /Input/SearchPath { \
     ../tb \
     ../inc \
-    ../src/$uarch \
+    ../firmware \
+    ../firmware/ap_types \
+    ../firmware/nnet_utils \
+    ../firmware/weights \
+    ../src \
     ../../../common/inc }
 
 # Add source files.
 solution file add ../src/ad03_cxx_catapult.cpp -type C++
 solution file add ../inc/ad03_cxx_catapult.hpp -type C++
+solution file add ../firmware/anomaly_detector.cpp -type C++
+solution file add ../firmware/anomaly_detector.h -type C++
 solution file add ../tb/main.cpp -type C++ -exclude true
 
 solution file set ../src/ad03_cxx_catapult.cpp -args -DDMA_WIDTH=$DMA_WIDTH

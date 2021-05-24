@@ -4,14 +4,18 @@
 #include "esp_headers.hpp"
 
 #include "ad03_cxx_catapult.hpp"
+#include "anomaly_detector.h"
 
 #include <mc_scverify.h>
 
 template <class T1, class T2>
 void compute_wrapper(T1 &input, T2 &output) {
-    for (unsigned int i = 0; i < PLM_SIZE; i++) {
-        output.data[i] = input.data[i];
-    }
+    unsigned short const_size_in_1;
+    unsigned short const_size_out_1;
+    layer22_t tmp[PLM_SIZE];    
+    anomaly_detector(input.data, tmp, const_size_in_1, const_size_out_1);
+    for (unsigned i = 0; i < PLM_SIZE; i++)
+        output.data[i] = tmp[i];
 }
 
 template <class W_PLM_TYPE, int W_PLM_SIZE, int DMA_INDEX>
