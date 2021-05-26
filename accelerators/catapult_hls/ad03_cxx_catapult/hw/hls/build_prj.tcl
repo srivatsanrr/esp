@@ -195,17 +195,19 @@ if {$opt(csim)} {
 # Run HLS.
 if {$opt(hsynth)} {
 
-    solution library \
-        add mgc_Xilinx-$FPGA_FAMILY$FPGA_SPEED_GRADE\_beh -- \
-        -rtlsyntool Vivado \
-        -manufacturer Xilinx \
-        -family $FPGA_FAMILY \
-        -speed $FPGA_SPEED_GRADE \
-        -part $FPGA_PART_NUM
+    # TODO: Disable FPGA target and use Generic Library
+    #solution library \
+    #    add mgc_Xilinx-$FPGA_FAMILY$FPGA_SPEED_GRADE\_beh -- \
+    #    -rtlsyntool Vivado \
+    #    -manufacturer Xilinx \
+    #    -family $FPGA_FAMILY \
+    #    -speed $FPGA_SPEED_GRADE \
+    #    -part $FPGA_PART_NUM
+    #solution library add Xilinx_RAMS
+    #solution library add Xilinx_ROMS
+    #solution library add Xilinx_FIFO
 
-    solution library add Xilinx_RAMS
-    solution library add Xilinx_ROMS
-    solution library add Xilinx_FIFO
+    solution library add nangate-45nm_beh -- -rtlsyntool DesignCompiler -vendor Nangate -technology 045nm
 
     # For Catapult 10.5: disable all sequential clock-gating
     directive set GATE_REGISTERS false
@@ -218,9 +220,9 @@ if {$opt(hsynth)} {
 
     directive set -CLOCKS { \
         clk { \
-            -CLOCK_PERIOD 6.4 \
+            -CLOCK_PERIOD 4.0 \
             -CLOCK_EDGE rising \
-            -CLOCK_HIGH_TIME 3.2 \
+            -CLOCK_HIGH_TIME 2.0 \
             -CLOCK_OFFSET 0.000000 \
             -CLOCK_UNCERTAINTY 0.0 \
             -RESET_KIND sync \
@@ -252,13 +254,38 @@ if {$opt(hsynth)} {
     directive set /$ACCELERATOR/acc_done:rsc -MAP_TO_MODULE ccs_ioport.ccs_sync_out_vld
 
     # Arrays
-    directive set /$ACCELERATOR/core/plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
-    directive set /$ACCELERATOR/core/plm_out.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
+    #directive set /$ACCELERATOR/core/plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
+    #directive set /$ACCELERATOR/core/plm_out.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
+
+    directive set /$ACCELERATOR/core/plm_in.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/compute_wrapper<plm_in_t,plm_out_t>:tmp:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer2_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer4_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer5_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer6_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer8_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer9_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer10_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer12_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer13_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer14_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer16_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer17_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer18_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer20_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/anomaly_detector:layer21_out:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/nnet::dense_resource_rf_gt_nin_rem0<input_t,layer2_t,config2>:acc:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/nnet::dense_resource_rf_gt_nin_rem0<layer5_t,layer6_t,config6>:acc:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/nnet::dense_resource_rf_gt_nin_rem0<layer9_t,layer10_t,config10>:acc:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/nnet::dense_resource_rf_gt_nin_rem0<layer13_t,layer14_t,config14>:acc:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/nnet::dense_resource_rf_gt_nin_rem0<layer17_t,layer18_t,config18>:acc:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/nnet::dense_resource_rf_gt_nin_rem0<layer21_t,layer22_t,config22>:acc:rsc -MAP_TO_MODULE {[Register]}
 
     # Loops
     # 1 function
-    directive set /$ACCELERATOR/core/BATCH_LOOP -PIPELINE_INIT_INTERVAL 1
-    directive set /$ACCELERATOR/core/BATCH_LOOP -PIPELINE_STALL_MODE flush
+    #directive set /$ACCELERATOR/core/BATCH_LOOP -PIPELINE_INIT_INTERVAL 1
+    #directive set /$ACCELERATOR/core/BATCH_LOOP -PIPELINE_STALL_MODE flush
 
     # Loops performance tracing
 

@@ -12,12 +12,14 @@ template <class T1, class T2>
 void compute_wrapper(T1 &input, T2 &output) {
     unsigned short const_size_in_1;
     unsigned short const_size_out_1;
-    layer22_t tmp[PLM_SIZE];    
+    layer22_t tmp[PLM_SIZE];
     anomaly_detector(input.data, tmp, const_size_in_1, const_size_out_1);
+OUTPUT_CAST_LOOP:
     for (unsigned i = 0; i < PLM_SIZE; i++)
         output.data[i] = tmp[i];
 }
 
+#if 0
 template <class W_PLM_TYPE, int W_PLM_SIZE, int DMA_INDEX>
 void read_weights(plm_t<W_PLM_TYPE, W_PLM_SIZE> &plm_w, ac_channel<dma_info_t> &dma_read_ctrl, ac_channel<dma_data_t> &dma_read_chnl) {
     // Configure DMA read channel (CTRL)
@@ -46,6 +48,7 @@ LOAD_LOOP:
         }
     }
 }
+#endif
 
 #pragma hls_design top
 #ifdef __CUSTOM_SIM__
@@ -77,9 +80,10 @@ void CCS_BLOCK(ad03_cxx_catapult)(
     // Private Local Memories
     plm_in_t plm_in;
     plm_out_t plm_out;
+
+#if 0
     plm_w2_t plm_w2;
     plm_b2_t plm_b2;
-#if 0
     plm_s4_t plm_s4;
     plm_b4_t plm_b4;
     plm_w6_t plm_w6;
@@ -147,8 +151,11 @@ BATCH_LOOP:
             if (b >= batch) break;
 
             // Configure DMA read channel (CTRL)
-            dma_read_data_index = (dma_read_data_length / 2) * b;
-            dma_read_info = {dma_read_data_index, (dma_read_data_length / 2), DMA_SIZE};
+            // DMA_WIDTH for Ibex is 32 bits
+            // AD03 input word is 8 bits
+            // Each DMA transaction is 4 input words
+            dma_read_data_index = (dma_read_data_length / 4) * b;
+            dma_read_info = {dma_read_data_index, (dma_read_data_length / 4), SIZE_BYTE};
             bool dma_read_ctrl_done = false;
 LOAD_CTRL_LOOP:
             do { dma_read_ctrl_done = dma_read_ctrl.nb_write(dma_read_info); } while (!dma_read_ctrl_done);
@@ -157,58 +164,75 @@ LOAD_CTRL_LOOP:
 
             if (dma_read_ctrl_done) { // Force serialization between DMA control and DATA data transfer
 LOAD_LOOP:
-                for (uint16_t i = 0; i < PLM_SIZE; i+=2) {
+                for (uint16_t i = 0; i < PLM_SIZE; i+=4) {
 
                     if (i >= dma_read_data_length) break;
 
-                    assert(DMA_WIDTH == 16 && "DMA_WIDTH should be 16");
+                    assert(DMA_WIDTH == 32 && "DMA_WIDTH for Ibex should be 32 bits");
                     ac_int<DMA_WIDTH, false> data_ac;
 #ifndef __SYNTHESIS__
                     while (!dma_read_chnl.available(1)) {}; // Hardware stalls until data ready
 #endif
                     data_ac = dma_read_chnl.read().template slc<DMA_WIDTH>(0);
 
-                    FPDATA_IN data_lo;
-                    FPDATA_IN data_hi;
-                    data_lo.set_slc(0, data_ac.template slc<WL>(0));
-                    data_hi.set_slc(0, data_ac.template slc<WL>(WL));
-                    plm_in.data[i] = data_lo;
-                    plm_in.data[i+1] = data_hi;
+                    FPDATA_IN data_0;
+                    FPDATA_IN data_1;
+                    FPDATA_IN data_2;
+                    FPDATA_IN data_3;
+                    data_0.set_slc(0, data_ac.template slc<WL>(WL*0));
+                    data_1.set_slc(0, data_ac.template slc<WL>(WL*1));
+                    data_2.set_slc(0, data_ac.template slc<WL>(WL*2));
+                    data_3.set_slc(0, data_ac.template slc<WL>(WL*3));
+                    plm_in.data[i+0] = data_0;
+                    plm_in.data[i+1] = data_1;
+                    plm_in.data[i+2] = data_2;
+                    plm_in.data[i+3] = data_3;
 
-                    ESP_REPORT_INFO(VOFF, "plm_in[%u] = %d", ESP_TO_UINT32(i), (char)data_lo.to_int());
-                    ESP_REPORT_INFO(VOFF, "plm_in[%u] = %d", ESP_TO_UINT32(i)+1, (char)data_hi.to_int());
+                    ESP_REPORT_INFO(VOFF, "plm_in[%u] = %d", ESP_TO_UINT32(i)+0, (char)data_0.to_int());
+                    ESP_REPORT_INFO(VOFF, "plm_in[%u] = %d", ESP_TO_UINT32(i)+1, (char)data_1.to_int());
+                    ESP_REPORT_INFO(VOFF, "plm_in[%u] = %d", ESP_TO_UINT32(i)+2, (char)data_2.to_int());
+                    ESP_REPORT_INFO(VOFF, "plm_in[%u] = %d", ESP_TO_UINT32(i)+3, (char)data_3.to_int());
                 }
             }
 
             compute_wrapper<plm_in_t, plm_out_t>(plm_in, plm_out);
 
-            // Configure DMA write channle (CTRL)
-            dma_write_data_index = ((dma_read_data_length / 2) * batch) + (dma_write_data_length / 2) * b;
-            dma_write_info = {dma_write_data_index, (dma_write_data_length / 2), DMA_SIZE};
+            // Configure DMA write channel (CTRL)
+            // DMA_WIDTH for Ibex is 32 bits
+            // AD03 output word is 8 bits
+            // Each DMA transaction is 4 output words
+            dma_write_data_index = ((dma_read_data_length / 4) * batch) + (dma_write_data_length / 4) * b;
+            dma_write_info = {dma_write_data_index, (dma_write_data_length / 4), SIZE_BYTE};
             bool dma_write_ctrl_done = false;
 STORE_CTRL_LOOP:
             do { dma_write_ctrl_done = dma_write_ctrl.nb_write(dma_write_info); } while (!dma_write_ctrl_done);
 
-            ESP_REPORT_INFO(VON, "DMA write ctrl: data index = %u, data length = %u, size [2 = 32b, 3 = 64b] = %llu", ESP_TO_UINT32(dma_write_info.index), ESP_TO_UINT32(dma_write_info.length), dma_write_info.size.to_uint64());
+            ESP_REPORT_INFO(VON, "DMA write ctrl: data index = %u, data length = %u, size [0=8b, 1=16b, 2=32b, 3=64b] = %llu", ESP_TO_UINT32(dma_write_info.index), ESP_TO_UINT32(dma_write_info.length), dma_write_info.size.to_uint64());
 
             if (dma_write_ctrl_done) { // Force serialization between DMA control and DATA data transfer
 STORE_LOOP:
-                for (uint16_t i = 0; i < PLM_SIZE; i+=2) {
+                for (uint16_t i = 0; i < PLM_SIZE; i+=4) {
 
                     if (i >= dma_write_data_length) break;
 
-                    FPDATA_OUT data_lo = plm_out.data[i];
-                    FPDATA_OUT data_hi = plm_out.data[i+1];
+                    FPDATA_OUT data_0 = plm_out.data[i+0];
+                    FPDATA_OUT data_1 = plm_out.data[i+1];
+                    FPDATA_OUT data_2 = plm_out.data[i+2];
+                    FPDATA_OUT data_3 = plm_out.data[i+3];
 
-                    assert(DMA_WIDTH == 16 && "DMA_WIDTH should be 16");
+                    assert(DMA_WIDTH == 32 && "DMA_WIDTH should be 32 bits");
                     ac_int<DMA_WIDTH, false> data_ac;
-                    data_ac.set_slc(0, data_lo.template slc<WL>(0));
-                    data_ac.set_slc(WL, data_hi.template slc<WL>(0));
+                    data_ac.set_slc(WL*0, data_0.template slc<WL>(0));
+                    data_ac.set_slc(WL*1, data_1.template slc<WL>(0));
+                    data_ac.set_slc(WL*2, data_2.template slc<WL>(0));
+                    data_ac.set_slc(WL*3, data_3.template slc<WL>(0));
 
                     dma_write_chnl.write(data_ac);
 
-                    ESP_REPORT_INFO(VOFF, "plm_out[%u] = %d", ESP_TO_UINT32(i), (char)data_lo.to_int());
-                    ESP_REPORT_INFO(VOFF, "plm_out[%u] = %d", ESP_TO_UINT32(i)+1, (char)data_hi.to_int());
+                    ESP_REPORT_INFO(VOFF, "plm_out[%u] = %d", ESP_TO_UINT32(i)+0, (char)data_0.to_int());
+                    ESP_REPORT_INFO(VOFF, "plm_out[%u] = %d", ESP_TO_UINT32(i)+1, (char)data_1.to_int());
+                    ESP_REPORT_INFO(VOFF, "plm_out[%u] = %d", ESP_TO_UINT32(i)+2, (char)data_2.to_int());
+                    ESP_REPORT_INFO(VOFF, "plm_out[%u] = %d", ESP_TO_UINT32(i)+3, (char)data_3.to_int());
                 }
             }
         }

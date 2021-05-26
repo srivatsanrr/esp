@@ -26,7 +26,7 @@ void anomaly_detector(
     layer22_t layer22_out[N_LAYER_22],
     unsigned short &const_size_in_1,
     unsigned short &const_size_out_1
-    #if 0
+#if 0
     ,
 	//hls-fpga-machine-learning insert weights ports
     weight2_t w2[8192],
@@ -51,7 +51,7 @@ void anomaly_detector(
     batch_normalization_4_bias_t b20[64],
     weight22_t w22[8192],
     bias22_t b22[128]
-    #endif
+#endif
 ) {
 
     //hls-fpga-machine-learning insert IO

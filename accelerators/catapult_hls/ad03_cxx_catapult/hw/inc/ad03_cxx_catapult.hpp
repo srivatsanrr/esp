@@ -10,9 +10,6 @@
 #include <ac_channel.h>   // Algorithmic C channel class
 #include <ac_sync.h>
 
-// NoC-/Accelerator-interface dimensions
-#define DMA_SIZE SIZE_BYTE
-
 typedef ac_int<DMA_WIDTH, false> dma_data_t;
 
 // PLM and data dimensions
