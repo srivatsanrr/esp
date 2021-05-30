@@ -79,7 +79,7 @@ void compute_pool_2d(
 
     PixelLoop: for (unsigned p = 0; p < data_T::size / CONFIG_T::n_filt; p++) {
 
-        ap_uint<CONFIG_T::pool_height * CONFIG_T::pool_width> filt_mask = 0;
+        ac_int<CONFIG_T::pool_height * CONFIG_T::pool_width, false> filt_mask = 0;
         if ((h_idx < nH) && (wp_idx + p < nW)) {
             filt_mask = sh_idx + pool_table_width[wp_idx + p] + 1;
         }
@@ -178,7 +178,7 @@ void compute_pool_1d(
 
     PixelLoop: for (unsigned p = 0; p < data_T::size / CONFIG_T::n_filt; p++) {
 
-        ap_uint<CONFIG_T::pool_width> filt_mask = 0;
+        ac_int<CONFIG_T::pool_width, false> filt_mask = 0;
         if (wp_idx + p < nW) {
             filt_mask = pool_table_width[wp_idx + p] + 1;
         }

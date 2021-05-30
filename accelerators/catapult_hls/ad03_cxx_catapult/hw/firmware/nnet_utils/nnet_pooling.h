@@ -18,28 +18,28 @@ T max(T x[N]){
 }
 
 template<int W, int N>
-ap_int<W> avg(ap_int<W> (&x)[N]){
+ac_int<W> avg(ac_int<W> (&x)[N]){
   // Use a wider accumulator than the input to avoid overflow
-  ap_int<W + ceillog2(N)> tmp = 0;
+  ac_int<W + ceillog2(N)> tmp = 0;
   for(int i = 0; i < N; i++){
     tmp += x[i];
   }
   tmp /= N;
   // Now cast back to original type
-  ap_int<W> y = tmp;
+  ac_int<W> y = tmp;
   return tmp;
 }
 
 template<int W, int I, int N>
-ap_fixed<W, I> avg(ap_fixed<W, I> (&x)[N]){
+ac_fixed<W, I> avg(ac_fixed<W, I> (&x)[N]){
   // Use a wider accumulator than the input to avoid overflow
-  ap_fixed<W + ceillog2(N), I + ceillog2(N)> tmp = 0;
+  ac_fixed<W + ceillog2(N), I + ceillog2(N)> tmp = 0;
   for(int i = 0; i < N; i++){
     tmp += x[i];
   }
   tmp /= N;
   // Now cast back to original type
-  ap_fixed<W, I> y = tmp;
+  ac_fixed<W, I> y = tmp;
   return y;
 }
 

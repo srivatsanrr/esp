@@ -169,20 +169,31 @@ LOAD_LOOP:
                     if (i >= dma_read_data_length) break;
 
                     assert(DMA_WIDTH == 32 && "DMA_WIDTH for Ibex should be 32 bits");
+
                     ac_int<DMA_WIDTH, false> data_ac;
 #ifndef __SYNTHESIS__
                     while (!dma_read_chnl.available(1)) {}; // Hardware stalls until data ready
 #endif
                     data_ac = dma_read_chnl.read().template slc<DMA_WIDTH>(0);
 
+                    // DMA word
+                    // |<--- 0 --->|<--- 1 --->|<--- 2 --->|<--- 3 --->|
+                    //  ...
+                    //
+                    // PLM (in)
+                    // |<--- 0 --->|
+                    // |<--- 1 --->|
+                    // |<--- 2 --->|
+                    // |<--- 3 --->|
+                    //  ...
                     FPDATA_IN data_0;
                     FPDATA_IN data_1;
                     FPDATA_IN data_2;
                     FPDATA_IN data_3;
-                    data_0.set_slc(0, data_ac.template slc<WL>(WL*0));
-                    data_1.set_slc(0, data_ac.template slc<WL>(WL*1));
-                    data_2.set_slc(0, data_ac.template slc<WL>(WL*2));
-                    data_3.set_slc(0, data_ac.template slc<WL>(WL*3));
+                    data_3.set_slc(0, data_ac.template slc<WL>(WL*0));
+                    data_2.set_slc(0, data_ac.template slc<WL>(WL*1));
+                    data_1.set_slc(0, data_ac.template slc<WL>(WL*2));
+                    data_0.set_slc(0, data_ac.template slc<WL>(WL*3));
                     plm_in.data[i+0] = data_0;
                     plm_in.data[i+1] = data_1;
                     plm_in.data[i+2] = data_2;
@@ -215,17 +226,29 @@ STORE_LOOP:
 
                     if (i >= dma_write_data_length) break;
 
+                    assert(DMA_WIDTH == 32 && "DMA_WIDTH should be 32 bits");
+
+                    // PLM (in)
+                    // |<--- 0 --->|
+                    // |<--- 1 --->|
+                    // |<--- 2 --->|
+                    // |<--- 3 --->|
+                    //  ...
+                    //
+                    // DMA word
+                    // |<--- 0 --->|<--- 1 --->|<--- 2 --->|<--- 3 --->|
+                    //  ...
+
                     FPDATA_OUT data_0 = plm_out.data[i+0];
                     FPDATA_OUT data_1 = plm_out.data[i+1];
                     FPDATA_OUT data_2 = plm_out.data[i+2];
                     FPDATA_OUT data_3 = plm_out.data[i+3];
 
-                    assert(DMA_WIDTH == 32 && "DMA_WIDTH should be 32 bits");
                     ac_int<DMA_WIDTH, false> data_ac;
-                    data_ac.set_slc(WL*0, data_0.template slc<WL>(0));
-                    data_ac.set_slc(WL*1, data_1.template slc<WL>(0));
-                    data_ac.set_slc(WL*2, data_2.template slc<WL>(0));
-                    data_ac.set_slc(WL*3, data_3.template slc<WL>(0));
+                    data_ac.set_slc(WL*0, data_3.template slc<WL>(0));
+                    data_ac.set_slc(WL*1, data_2.template slc<WL>(0));
+                    data_ac.set_slc(WL*2, data_1.template slc<WL>(0));
+                    data_ac.set_slc(WL*3, data_0.template slc<WL>(0));
 
                     dma_write_chnl.write(data_ac);
 

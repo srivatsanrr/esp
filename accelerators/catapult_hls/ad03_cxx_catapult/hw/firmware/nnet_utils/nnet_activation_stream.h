@@ -21,7 +21,6 @@
 #define NNET_ACTIVATION_STREAM_H_
 
 #include <cmath>
-#include "ap_fixed.h"
 #include <ac_channel.h>
 #include <ac_float.h>
 #include "nnet_common.h"

@@ -36,7 +36,7 @@ struct batchnorm_config
 
     // Layer Sizes
     static const unsigned n_in = 10;
-    static const unsigned n_filt = -1;
+    static const int n_filt = -1;
     
     // Resource reuse info
     static const unsigned io_type = io_parallel;
@@ -72,7 +72,7 @@ void normalize(
     }            
 
     // Calcuate result
-    Result: for (int ires = 0; ires < CONFIG_T::n_in; ires++) {
+    Result: for (unsigned ires = 0; ires < CONFIG_T::n_in; ires++) {
         if (CONFIG_T::io_type == io_serial){
         }
         
@@ -92,7 +92,7 @@ struct batchnorm_quantized_tanh_config
 {
     // Layer Sizes
     static const unsigned n_in = 10;
-    static const unsigned n_filt = -1;
+    static const int n_filt = -1;
     
     // Resource reuse info
     static const unsigned io_type = io_parallel;
@@ -101,13 +101,13 @@ struct batchnorm_quantized_tanh_config
 };
 
 template<class data_T, typename CONFIG_T>
-void  normalize_binary_tanh(data_T data[CONFIG_T::n_in], ap_uint<1> res[CONFIG_T::n_in], data_T threshold[CONFIG_T::n_in])
+void  normalize_binary_tanh(data_T data[CONFIG_T::n_in], ac_int<1, false> res[CONFIG_T::n_in], data_T threshold[CONFIG_T::n_in])
 {
     if (CONFIG_T::io_type == io_parallel){
     }
 
     data_T datareg;   
-    ap_uint<1> cache; 
+    ac_int<1, false> cache; 
     for (int ii=0; ii<CONFIG_T::n_in; ii++) {
         if (CONFIG_T::io_type == io_serial){
         }
@@ -116,19 +116,19 @@ void  normalize_binary_tanh(data_T data[CONFIG_T::n_in], ap_uint<1> res[CONFIG_T
         if( datareg > threshold[norm_index] ) cache = 1;
         else cache = 0;
 
-        res[ii] = (ap_uint<1>) cache;
+        res[ii] = (ac_int<1, false>) cache;
  
     }   
 }
 
 template<class data_T, typename CONFIG_T>
-void  normalize_ternary_tanh(data_T data[CONFIG_T::n_in], ap_int<2> res[CONFIG_T::n_in], data_T threshold_hi[CONFIG_T::n_in], data_T threshold_lo[CONFIG_T::n_in])
+void  normalize_ternary_tanh(data_T data[CONFIG_T::n_in], ac_int<2> res[CONFIG_T::n_in], data_T threshold_hi[CONFIG_T::n_in], data_T threshold_lo[CONFIG_T::n_in])
 {
     if (CONFIG_T::io_type == io_parallel){
     }
 
     data_T datareg;   
-    ap_int<2> cache; 
+    ac_int<2> cache; 
     for (int ii=0; ii<CONFIG_T::n_in; ii++) {
         if (CONFIG_T::io_type == io_serial){
         }
@@ -139,7 +139,7 @@ void  normalize_ternary_tanh(data_T data[CONFIG_T::n_in], ap_int<2> res[CONFIG_T
         else if( datareg <= threshold_lo[norm_index]) cache = -1;
         else cache = 0;
 
-        res[ii] = (ap_int<2>) cache;
+        res[ii] = (ac_int<2>) cache;
  
     }
 }

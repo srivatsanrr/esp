@@ -68,14 +68,14 @@ void normalize(
 template<class data_T, typename CONFIG_T>
 void normalize_binary_tanh(
     ac_channel<data_T> &data,
-    ac_channel<nnet::array<ap_uint<1>, CONFIG_T::n_in>> &res,
+    ac_channel<nnet::array<ac_int<1, false>, CONFIG_T::n_in>> &res,
     typename data_T::value_type threshold[CONFIG_T::n_in]
 ) {
 
     BinaryNormLoop: for (int i = 0; i < CONFIG_T::n_in / data_T::size; i++) {
 
         data_T in_data = data.read();
-        nnet::array<ap_uint<1>, CONFIG_T::n_in> out_data;
+        nnet::array<ac_int<1, false>, CONFIG_T::n_in> out_data;
 
         BatchNormPack: for (int j = 0; j < data_T::size; j++) {
             out_data[j] = (in_data[j] > threshold[i * data_T::size + j]) ? 1 : 0;
@@ -88,7 +88,7 @@ void normalize_binary_tanh(
 template<class data_T, typename CONFIG_T>
 void normalize_ternary_tanh(
     ac_channel<data_T> &data,
-    ac_channel<nnet::array<ap_int<2>, CONFIG_T::n_in>> &res,
+    ac_channel<nnet::array<ac_int<2>, CONFIG_T::n_in>> &res,
     typename data_T::value_type threshold_hi[CONFIG_T::n_in],
     typename data_T::value_type threshold_lo[CONFIG_T::n_in]
 ) {
@@ -96,7 +96,7 @@ void normalize_ternary_tanh(
     TernaryNormLoop: for (int i = 0; i < CONFIG_T::n_in / data_T::size; i++) {
 
         data_T in_data = data.read();
-        nnet::array<ap_int<2>, CONFIG_T::n_in> out_data;
+        nnet::array<ac_int<2>, CONFIG_T::n_in> out_data;
 
         BatchNormPack: for (int j = 0; j < data_T::size; j++) {
             

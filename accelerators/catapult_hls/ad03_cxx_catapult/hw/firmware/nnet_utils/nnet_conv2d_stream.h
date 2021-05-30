@@ -11,7 +11,7 @@ template<class data_T, typename CONFIG_T>
 void compute_scaled_indices_2d(
     const unsigned h_idx,
     const unsigned w_idx,
-    ap_uint<CONFIG_T::filt_height * CONFIG_T::filt_width> *pixel_idx
+    ac_int<CONFIG_T::filt_height * CONFIG_T::filt_width, false> *pixel_idx
 ) {
     const unsigned sh_idx = scale_index<CONFIG_T::filt_height, CONFIG_T::stride_height, CONFIG_T::in_height>(h_idx);
     unsigned wp_idx = w_idx * (data_T::size / CONFIG_T::n_chan);
@@ -43,7 +43,7 @@ void conv_2d_cl(
     res_T res_pack;
     unsigned outputs_ready = 0;
 
-    ap_uint<CONFIG_T::filt_height * CONFIG_T::filt_width> pixel_idx[data_T::size / CONFIG_T::n_chan];
+    ac_int<CONFIG_T::filt_height * CONFIG_T::filt_width, false> pixel_idx[data_T::size / CONFIG_T::n_chan];
 
     ReadInputHeight: for (unsigned i_ih = 0; i_ih < CONFIG_T::in_height; i_ih++) {
         ReadInputWidth: for (unsigned i_iw = 0; i_iw < CONFIG_T::in_width / (data_T::size / CONFIG_T::n_chan); i_iw++) {

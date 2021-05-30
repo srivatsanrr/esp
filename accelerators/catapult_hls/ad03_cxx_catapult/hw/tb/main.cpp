@@ -125,6 +125,9 @@ CCS_MAIN(int argc, char **argv) {
     }
 #endif
 
+    // DMA word
+    // |<--- 0 --->|<--- 1 --->|<--- 2 --->|<--- 3 --->|
+    //
     // Pass inputs to the accelerator
     for (unsigned i = 0; i < conf_info_data.batch; i++) {
         for (unsigned j = 0; j < ad03_size; j+=4) {
@@ -133,10 +136,10 @@ CCS_MAIN(int argc, char **argv) {
             FPDATA_IN data_fp_2 = raw_inputs[i][j+2];
             FPDATA_IN data_fp_3 = raw_inputs[i][j+3];
 
-            inputs[i * ad03_size + j+0] = data_fp_0;
-            inputs[i * ad03_size + j+1] = data_fp_1;
-            inputs[i * ad03_size + j+2] = data_fp_2;
-            inputs[i * ad03_size + j+3] = data_fp_3;
+            inputs[i * ad03_size + j+0] = data_fp_3;
+            inputs[i * ad03_size + j+1] = data_fp_2;
+            inputs[i * ad03_size + j+2] = data_fp_1;
+            inputs[i * ad03_size + j+3] = data_fp_0;
 
             ac_int<DMA_WIDTH, false> data_ac;
             data_ac.set_slc(WL*0, inputs[i * ad03_size + j+0].template slc<WL>(0));
@@ -165,10 +168,10 @@ CCS_MAIN(int argc, char **argv) {
         ac_int<WL, false> data_1 = data.template slc<DMA_WIDTH>(WL*1);
         ac_int<WL, false> data_2 = data.template slc<DMA_WIDTH>(WL*2);
         ac_int<WL, false> data_3 = data.template slc<DMA_WIDTH>(WL*3);
-        outputs[i+0].template set_slc<WL>(0, data_0);
-        outputs[i+1].template set_slc<WL>(0, data_1);
-        outputs[i+2].template set_slc<WL>(0, data_2);
-        outputs[i+3].template set_slc<WL>(0, data_3);
+        outputs[i+3].template set_slc<WL>(0, data_0);
+        outputs[i+2].template set_slc<WL>(0, data_1);
+        outputs[i+1].template set_slc<WL>(0, data_2);
+        outputs[i+0].template set_slc<WL>(0, data_3);
     }
 
     // Validation

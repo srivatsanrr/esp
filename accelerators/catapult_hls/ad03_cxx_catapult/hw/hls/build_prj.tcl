@@ -196,18 +196,18 @@ if {$opt(csim)} {
 if {$opt(hsynth)} {
 
     # TODO: Disable FPGA target and use Generic Library
-    #solution library \
-    #    add mgc_Xilinx-$FPGA_FAMILY$FPGA_SPEED_GRADE\_beh -- \
-    #    -rtlsyntool Vivado \
-    #    -manufacturer Xilinx \
-    #    -family $FPGA_FAMILY \
-    #    -speed $FPGA_SPEED_GRADE \
-    #    -part $FPGA_PART_NUM
-    #solution library add Xilinx_RAMS
-    #solution library add Xilinx_ROMS
-    #solution library add Xilinx_FIFO
+    solution library \
+        add mgc_Xilinx-$FPGA_FAMILY$FPGA_SPEED_GRADE\_beh -- \
+        -rtlsyntool Vivado \
+        -manufacturer Xilinx \
+        -family $FPGA_FAMILY \
+        -speed $FPGA_SPEED_GRADE \
+        -part $FPGA_PART_NUM
+    solution library add Xilinx_RAMS
+    solution library add Xilinx_ROMS
+    solution library add Xilinx_FIFO
 
-    solution library add nangate-45nm_beh -- -rtlsyntool DesignCompiler -vendor Nangate -technology 045nm
+    #solution library add nangate-45nm_beh -- -rtlsyntool DesignCompiler -vendor Nangate -technology 045nm
 
     # For Catapult 10.5: disable all sequential clock-gating
     directive set GATE_REGISTERS false

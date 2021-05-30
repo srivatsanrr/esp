@@ -1,8 +1,7 @@
 #ifndef PARAMETERS_H_
 #define PARAMETERS_H_
 
-#include "ap_int.h"
-#include "ap_fixed.h"
+#include <ac_fixed.h>
 
 #include "nnet_utils/nnet_helpers.h"
 //hls-fpga-machine-learning insert includes
@@ -48,17 +47,17 @@ struct config2 : nnet::dense_config {
     static const unsigned n_zeros = 1063;
     static const unsigned n_nonzeros = 7129;
     static const bool store_weights_in_bram = false;
-    typedef ap_fixed<32,16> accum_t;
+    typedef ac_fixed<32,16> accum_t;
     typedef bias2_t bias_t;
     typedef weight2_t weight_t;
-    typedef ap_uint<1> index_t;
+    typedef ac_int<1, false> index_t;
     template<class x_T, class y_T, class res_T>
     using product = nnet::product::mult<x_T, y_T, res_T>;
 };
 
 struct config4 : nnet::batchnorm_config {
     static const unsigned n_in = N_LAYER_2;
-    static const unsigned n_filt = -1;
+    static const int n_filt = -1;
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned reuse_factor = 4096;
     static const bool store_weights_in_bram = false;
@@ -73,7 +72,7 @@ struct relu_config5 : nnet::activ_config {
     static const unsigned table_size = 1024;
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned reuse_factor = 4096;
-    typedef ap_fixed<18,8> table_t;
+    typedef ac_fixed<18,8> table_t;
 };
 
 struct config6 : nnet::dense_config {
@@ -85,17 +84,17 @@ struct config6 : nnet::dense_config {
     static const unsigned n_zeros = 435;
     static const unsigned n_nonzeros = 3661;
     static const bool store_weights_in_bram = false;
-    typedef ap_fixed<32,16> accum_t;
+    typedef ac_fixed<32,16> accum_t;
     typedef bias6_t bias_t;
     typedef weight6_t weight_t;
-    typedef ap_uint<1> index_t;
+    typedef ac_int<1, false> index_t;
     template<class x_T, class y_T, class res_T>
     using product = nnet::product::mult<x_T, y_T, res_T>;
 };
 
 struct config8 : nnet::batchnorm_config {
     static const unsigned n_in = N_LAYER_6;
-    static const unsigned n_filt = -1;
+    static const int n_filt = -1;
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned reuse_factor = 4096;
     static const bool store_weights_in_bram = false;
@@ -110,7 +109,7 @@ struct relu_config9 : nnet::activ_config {
     static const unsigned table_size = 1024;
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned reuse_factor = 4096;
-    typedef ap_fixed<18,8> table_t;
+    typedef ac_fixed<18,8> table_t;
 };
 
 struct config10 : nnet::dense_config {
@@ -122,17 +121,17 @@ struct config10 : nnet::dense_config {
     static const unsigned n_zeros = 10;
     static const unsigned n_nonzeros = 502;
     static const bool store_weights_in_bram = false;
-    typedef ap_fixed<32,16> accum_t;
+    typedef ac_fixed<32,16> accum_t;
     typedef bias10_t bias_t;
     typedef weight10_t weight_t;
-    typedef ap_uint<1> index_t;
+    typedef ac_int<1, false> index_t;
     template<class x_T, class y_T, class res_T>
     using product = nnet::product::mult<x_T, y_T, res_T>;
 };
 
 struct config12 : nnet::batchnorm_config {
     static const unsigned n_in = N_LAYER_10;
-    static const unsigned n_filt = -1;
+    static const int n_filt = -1;
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned reuse_factor = 4096;
     static const bool store_weights_in_bram = false;
@@ -147,7 +146,7 @@ struct relu_config13 : nnet::activ_config {
     static const unsigned table_size = 1024;
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned reuse_factor = 4096;
-    typedef ap_fixed<18,8> table_t;
+    typedef ac_fixed<18,8> table_t;
 };
 
 struct config14 : nnet::dense_config {
@@ -159,17 +158,17 @@ struct config14 : nnet::dense_config {
     static const unsigned n_zeros = 144;
     static const unsigned n_nonzeros = 368;
     static const bool store_weights_in_bram = false;
-    typedef ap_fixed<32,16> accum_t;
+    typedef ac_fixed<32,16> accum_t;
     typedef bias14_t bias_t;
     typedef weight14_t weight_t;
-    typedef ap_uint<1> index_t;
+    typedef ac_int<1, false> index_t;
     template<class x_T, class y_T, class res_T>
     using product = nnet::product::mult<x_T, y_T, res_T>;
 };
 
 struct config16 : nnet::batchnorm_config {
     static const unsigned n_in = N_LAYER_14;
-    static const unsigned n_filt = -1;
+    static const int n_filt = -1;
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned reuse_factor = 4096;
     static const bool store_weights_in_bram = false;
@@ -184,7 +183,7 @@ struct relu_config17 : nnet::activ_config {
     static const unsigned table_size = 1024;
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned reuse_factor = 4096;
-    typedef ap_fixed<18,8> table_t;
+    typedef ac_fixed<18,8> table_t;
 };
 
 struct config18 : nnet::dense_config {
@@ -196,17 +195,17 @@ struct config18 : nnet::dense_config {
     static const unsigned n_zeros = 462;
     static const unsigned n_nonzeros = 3634;
     static const bool store_weights_in_bram = false;
-    typedef ap_fixed<32,16> accum_t;
+    typedef ac_fixed<32,16> accum_t;
     typedef bias18_t bias_t;
     typedef weight18_t weight_t;
-    typedef ap_uint<1> index_t;
+    typedef ac_int<1, false> index_t;
     template<class x_T, class y_T, class res_T>
     using product = nnet::product::mult<x_T, y_T, res_T>;
 };
 
 struct config20 : nnet::batchnorm_config {
     static const unsigned n_in = N_LAYER_18;
-    static const unsigned n_filt = -1;
+    static const int n_filt = -1;
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned reuse_factor = 4096;
     static const bool store_weights_in_bram = false;
@@ -221,7 +220,7 @@ struct relu_config21 : nnet::activ_config {
     static const unsigned table_size = 1024;
     static const unsigned io_type = nnet::io_parallel;
     static const unsigned reuse_factor = 4096;
-    typedef ap_fixed<18,8> table_t;
+    typedef ac_fixed<18,8> table_t;
 };
 
 struct config22 : nnet::dense_config {
@@ -233,10 +232,10 @@ struct config22 : nnet::dense_config {
     static const unsigned n_zeros = 440;
     static const unsigned n_nonzeros = 7752;
     static const bool store_weights_in_bram = false;
-    typedef ap_fixed<32,16> accum_t;
+    typedef ac_fixed<32,16> accum_t;
     typedef bias22_t bias_t;
     typedef weight22_t weight_t;
-    typedef ap_uint<1> index_t;
+    typedef ac_int<1, false> index_t;
     template<class x_T, class y_T, class res_T>
     using product = nnet::product::mult<x_T, y_T, res_T>;
 };

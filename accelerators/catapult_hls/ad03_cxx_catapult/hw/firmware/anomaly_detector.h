@@ -20,9 +20,6 @@
 #ifndef ANOMALY_DETECTOR_H_
 #define ANOMALY_DETECTOR_H_
 
-#include "ap_int.h"
-#include "ap_fixed.h"
-
 #include "defines.h"
 
 

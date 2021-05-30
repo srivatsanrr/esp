@@ -33,7 +33,7 @@ namespace nnet {
     typename std::enable_if<std::is_class<typename CONFIG_T::distance_t>::value>::type
     initialize_edge_weights_table(typename CONFIG_T::edge_weight_t edge_weights_table[])
     {
-      typedef ap_uint<CONFIG_T::distance_width> index_t;
+      typedef ac_int<CONFIG_T::distance_width, false> index_t;
 
       unsigned const table_size = (1 << CONFIG_T::distance_width);
 
@@ -70,7 +70,7 @@ namespace nnet {
     typename std::enable_if<std::is_class<typename CONFIG_T::distance_t>::value, typename CONFIG_T::edge_weight_t>::type
     get_edge_weight(typename CONFIG_T::distance_t distance, typename CONFIG_T::edge_weight_t edge_weights_table[])
     {
-      typedef ap_uint<CONFIG_T::distance_width> index_t;
+      typedef ac_int<CONFIG_T::distance_width, false> index_t;
 
       index_t index(distance.range(CONFIG_T::distance_width - 1, 0));
 

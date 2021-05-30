@@ -69,11 +69,11 @@ void dense_latency(
     }
 
     // Do the matrix-multiply
-    Product1: for(int ii = 0; ii < CONFIG_T::n_in; ii++) {
+    Product1: for(unsigned ii = 0; ii < CONFIG_T::n_in; ii++) {
         if (CONFIG_T::io_type == io_serial){
         }
         cache = data[ii];
-        Product2: for(int jj = 0; jj < CONFIG_T::n_out; jj++) {
+        Product2: for(unsigned jj = 0; jj < CONFIG_T::n_out; jj++) {
             if (CONFIG_T::io_type == io_serial) {
                 int multiplier_limit  = DIV_ROUNDUP(float(CONFIG_T::n_out) , float(CONFIG_T::reuse_factor));
                 CONFIG_T::template product<data_T, typename CONFIG_T::weight_t, typename CONFIG_T::accum_t>::limit(multiplier_limit);
@@ -84,24 +84,24 @@ void dense_latency(
     }
 
     // Initialize accumulator with input biases
-    ResetAccum: for(int iacc = 0; iacc < CONFIG_T::n_out; iacc++) {
+    ResetAccum: for(unsigned iacc = 0; iacc < CONFIG_T::n_out; iacc++) {
         if (CONFIG_T::io_type == io_serial){
         }
         acc[iacc] = (typename CONFIG_T::accum_t) biases[iacc];
     }
 
     // Accumulate multiplication result
-    Accum1: for(int ii = 0; ii < CONFIG_T::n_in; ii++) {
+    Accum1: for(unsigned ii = 0; ii < CONFIG_T::n_in; ii++) {
         if (CONFIG_T::io_type == io_serial){
         }
-        Accum2: for(int jj = 0; jj < CONFIG_T::n_out; jj++) {
+        Accum2: for(unsigned jj = 0; jj < CONFIG_T::n_out; jj++) {
         int index = ii*CONFIG_T::n_out+jj;
         acc[jj] += mult[index];
         }
     }
 
     // Cast to "res_t" type
-    Result: for(int ires = 0; ires < CONFIG_T::n_out; ires++){
+    Result: for(unsigned ires = 0; ires < CONFIG_T::n_out; ires++){
         if (CONFIG_T::io_type == io_serial){
         }
         //res[ires] = (res_T) (acc[ires]);

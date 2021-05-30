@@ -21,7 +21,6 @@
 #define NNET_ACTIVATION_H_
 
 #include <cmath>
-#include "ap_fixed.h"
 #include "nnet_common.h"
 
 namespace nnet {
@@ -39,7 +38,7 @@ struct activ_config
     static const unsigned reuse_factor = 1;
 
     // Internal data type definitions
-    typedef ap_fixed<18,8> table_t;
+    typedef ac_fixed<18,8> table_t;
 };
 
 // *************************************************
@@ -70,12 +69,12 @@ void  relu(data_T data[CONFIG_T::n_in], res_T res[CONFIG_T::n_in])
     }
 
     data_T datareg;
-    for (int ii=0; ii<CONFIG_T::n_in; ii++) {
+    for (unsigned ii=0; ii<CONFIG_T::n_in; ii++) {
         if (CONFIG_T::io_type == io_serial){
         }
         datareg = data[ii];
         if (datareg > 0) res[ii] = datareg;
-        else res[ii] = 0;
+        else res[ii] = res_T(0);
     }
 }
 
@@ -186,7 +185,7 @@ template<class data_T, typename CONFIG_T>
 inline unsigned softmax_idx_from_real_val(data_T x){
     // Slice the top N bits to get an index into the table
     static constexpr int N = ceillog2(CONFIG_T::table_size); // number of address bits for table
-    ap_uint<N> y = x(x.width-1, x.width-N); // slice the top N bits of input
+    ac_int<N, false> y = x(x.width-1, x.width-N); // slice the top N bits of input
     return (unsigned) y(N-1, 0);
 }
 

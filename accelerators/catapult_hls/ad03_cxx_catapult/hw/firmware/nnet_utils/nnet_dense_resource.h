@@ -88,7 +88,7 @@ void dense_resource_rf_leq_nin(
 
     // Cast to "res_t" type
     Result:
-    for (int ires = 0; ires < CONFIG_T::n_out; ires++) {
+    for (unsigned ires = 0; ires < CONFIG_T::n_out; ires++) {
         res[ires] = cast<data_T, res_T, CONFIG_T>(acc[ires]);
     }
 }
@@ -104,7 +104,7 @@ void dense_resource_rf_gt_nin_rem0(
     const int multfactor = MIN(CONFIG_T::n_in,CONFIG_T::reuse_factor);
     const int multiplier_limit = DIV_ROUNDUP(CONFIG_T::n_in*CONFIG_T::n_out, multfactor);
     const int block_factor = DIV_ROUNDUP(CONFIG_T::n_in*CONFIG_T::n_out, CONFIG_T::reuse_factor);
-    const int multscale = multiplier_limit/CONFIG_T::n_out;
+    //const int multscale = multiplier_limit/CONFIG_T::n_out;
     const int nin = CONFIG_T::n_in;
     const int nout = CONFIG_T::n_out;
 
@@ -119,7 +119,7 @@ void dense_resource_rf_gt_nin_rem0(
         acc[iacc] = (typename CONFIG_T::accum_t) biases[iacc];
     }
 
-    int w_index;
+    unsigned w_index;
     int in_index = 0;
     int out_index;
     int outstep = 0;
@@ -141,7 +141,7 @@ void dense_resource_rf_gt_nin_rem0(
         out_index = outidx[ir]/*outstep*/;
 
         MultLoop:
-        for (int im = 0; im < block_factor; im++) {
+        for (unsigned im = 0; im < block_factor; im++) {
             acc[out_index] += CONFIG_T::template product<data_T, typename CONFIG_T::weight_t, typename CONFIG_T::accum_t>::product(data[in_index], weights[w_index]);
 
             w_index += rufactor;
@@ -158,7 +158,7 @@ void dense_resource_rf_gt_nin_rem0(
 
     // Cast to "res_t" type
     Result:
-    for (int ires = 0; ires < CONFIG_T::n_out; ires++) {
+    for (unsigned ires = 0; ires < CONFIG_T::n_out; ires++) {
         res[ires] = cast<data_T, res_T, CONFIG_T>(acc[ires]);
     }
 }
@@ -174,7 +174,7 @@ void dense_resource_rf_gt_nin(
     const int multfactor = MIN(CONFIG_T::n_in,CONFIG_T::reuse_factor);
     const int multiplier_limit = DIV_ROUNDUP(CONFIG_T::n_in*CONFIG_T::n_out, multfactor);
     const int block_factor = DIV_ROUNDUP(CONFIG_T::n_in*CONFIG_T::n_out, CONFIG_T::reuse_factor);
-    const int multscale = multiplier_limit/CONFIG_T::n_out;
+    //const int multscale = multiplier_limit/CONFIG_T::n_out;
     const int nin = CONFIG_T::n_in;
     const int nout = CONFIG_T::n_out;
 
@@ -194,9 +194,9 @@ void dense_resource_rf_gt_nin(
         typename CONFIG_T::accum_t tmpmult[block_factor];
 
         MultLoop:
-        for (int im = 0; im < block_factor; im++) {
-            int w_index = ir + rufactor * im;
-            int in_index = w_index % nin;
+        for (unsigned im = 0; im < block_factor; im++) {
+            unsigned w_index = ir + rufactor * im;
+            unsigned in_index = w_index % nin;
             if (w_index >= CONFIG_T::n_in*CONFIG_T::n_out) continue; // check out of bounds
             tmpmult[im] = CONFIG_T::template product<data_T, typename CONFIG_T::weight_t, typename CONFIG_T::accum_t>::product(data[in_index], weights[w_index]);
         }
@@ -205,7 +205,7 @@ void dense_resource_rf_gt_nin(
 
         ResetMult:
         for (int imult = 0; imult < multiplier_limit; imult++) {
-            mult[imult] = 0;
+            mult[imult] = (typename CONFIG_T::accum_t)(0);
         }
 
         AccumLoop1:
@@ -226,7 +226,7 @@ void dense_resource_rf_gt_nin(
 
     // Cast to "res_t" type
     Result:
-    for (int ires = 0; ires < CONFIG_T::n_out; ires++) {
+    for (unsigned ires = 0; ires < CONFIG_T::n_out; ires++) {
         res[ires] = cast<data_T, res_T, CONFIG_T>(acc[ires]);
     }
 }

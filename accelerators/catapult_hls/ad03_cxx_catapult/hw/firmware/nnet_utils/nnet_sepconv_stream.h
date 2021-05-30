@@ -102,7 +102,7 @@ void compute_depthwise_output(
     unsigned &outputs_ready,
     typename CONFIG_T::weight_t weights[CONFIG_T::kernel_size * CONFIG_T::n_chan],
     typename CONFIG_T::bias_t biases[CONFIG_T::n_chan],
-    ap_uint<CONFIG_T::kernel_size> *pixel_idx
+    ac_int<CONFIG_T::kernel_size, false> *pixel_idx
 ) {
 
     MultLoop: for (unsigned p = 0; p < data_T::size / CONFIG_T::n_chan; p++) {

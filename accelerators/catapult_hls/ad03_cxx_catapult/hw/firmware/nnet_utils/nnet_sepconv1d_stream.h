@@ -28,7 +28,7 @@ void depthwise_conv_1d_cl(
     res_T res_pack;
     unsigned outputs_ready = 0;
 
-    ap_uint<CONFIG_T::filt_width> pixel_idx[data_T::size / CONFIG_T::n_chan];
+    ac_int<CONFIG_T::filt_width, false> pixel_idx[data_T::size / CONFIG_T::n_chan];
 
     ReadInputWidth: for (unsigned i_iw = 0; i_iw < CONFIG_T::in_width / (data_T::size / CONFIG_T::n_chan); i_iw++) {
         if (CONFIG_T::strategy == nnet::latency && data_T::size / CONFIG_T::n_chan == 1) {
