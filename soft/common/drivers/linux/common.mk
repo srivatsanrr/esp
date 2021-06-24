@@ -29,7 +29,7 @@ endif
 CFLAGS += $(EXTRA_CFLAGS)
 CFLAGS += -O3
 CFLAGS += -Wall
-CFLAGS += -I$(DRIVERS)/include -I$(DRIVERS)/../common/include -I../include
+CFLAGS += -I$(DRIVERS)/include -I$(DRIVERS)/../common/include -I../include -I$(DESIGN_PATH)/socgen/esp
 CFLAGS += -L$(BUILD_DRIVERS)/contig_alloc -L$(BUILD_DRIVERS)/test
 CFLAGS += -L$(BUILD_DRIVERS)/libesp -L$(BUILD_DRIVERS)/utils/linux
 LDFLAGS += -lm -lrt -lpthread -lesp -ltest -lcontig -lutils
