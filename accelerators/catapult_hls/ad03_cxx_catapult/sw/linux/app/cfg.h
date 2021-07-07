@@ -4,12 +4,13 @@
 #define __ESP_CFG_H__
 
 #include "libesp.h"
-#include "softmax_cxx_catapult.h"
+#include "ad03_cxx_catapult.h"
 
-typedef int64_t token_t;
+typedef int8_t token_t;
 
 /* <<--params-def-->> */
 #define BATCH 1
+#define MODE 0
 
 /* <<--params-->> */
 const int32_t batch = BATCH;
@@ -19,7 +20,7 @@ const int32_t size = 128;
 
 #define NACC 1
 
-struct softmax_cxx_catapult_access softmax_cxx_cfg_000[] = {
+struct ad03_cxx_catapult_access ad03_cxx_cfg_000[] = {
 	{
 		/* <<--descriptor-->> */
 		.batch = BATCH,
@@ -36,18 +37,18 @@ struct softmax_cxx_catapult_access softmax_cxx_cfg_000[] = {
 esp_thread_info_t cfg_000[] = {
 	{
 		.run = true,
-		.devname = "softmax_cxx_catapult.0",
-		.ioctl_req = SOFTMAX_CXX_CATAPULT_IOC_ACCESS,
-		.esp_desc = &(softmax_cxx_cfg_000[0].esp),
+		.devname = "ad03_cxx_catapult.0",
+		.ioctl_req = AD03_CXX_CATAPULT_IOC_ACCESS,
+		.esp_desc = &(ad03_cxx_cfg_000[0].esp),
 	}
 };
 
 esp_thread_info_t cfg_001[] = {
 	{
 		.run = true,
-		.devname = "softmax_cxx_catapult.1",
-		.ioctl_req = SOFTMAX_CXX_CATAPULT_IOC_ACCESS,
-		.esp_desc = &(softmax_cxx_cfg_000[0].esp),
+		.devname = "ad03_cxx_catapult.1",
+		.ioctl_req = AD03_CXX_CATAPULT_IOC_ACCESS,
+		.esp_desc = &(ad03_cxx_cfg_000[0].esp),
 	}
 };
 

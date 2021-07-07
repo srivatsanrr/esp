@@ -195,19 +195,19 @@ if {$opt(csim)} {
 # Run HLS.
 if {$opt(hsynth)} {
 
-    # TODO: Disable FPGA target and use Generic Library
-    solution library \
-        add mgc_Xilinx-$FPGA_FAMILY$FPGA_SPEED_GRADE\_beh -- \
-        -rtlsyntool Vivado \
-        -manufacturer Xilinx \
-        -family $FPGA_FAMILY \
-        -speed $FPGA_SPEED_GRADE \
-        -part $FPGA_PART_NUM
-    solution library add Xilinx_RAMS
-    solution library add Xilinx_ROMS
-    solution library add Xilinx_FIFO
+    # TODO: Disable FPGA target and use Generic 45nm Library
+    #solution library \
+    #    add mgc_Xilinx-$FPGA_FAMILY$FPGA_SPEED_GRADE\_beh -- \
+    #    -rtlsyntool Vivado \
+    #    -manufacturer Xilinx \
+    #    -family $FPGA_FAMILY \
+    #    -speed $FPGA_SPEED_GRADE \
+    #    -part $FPGA_PART_NUM
+    #solution library add Xilinx_RAMS
+    #solution library add Xilinx_ROMS
+    #solution library add Xilinx_FIFO
 
-    #solution library add nangate-45nm_beh -- -rtlsyntool DesignCompiler -vendor Nangate -technology 045nm
+    solution library add nangate-45nm_beh -- -rtlsyntool DesignCompiler -vendor Nangate -technology 045nm
 
     # For Catapult 10.5: disable all sequential clock-gating
     directive set GATE_REGISTERS false
@@ -281,6 +281,32 @@ if {$opt(hsynth)} {
     directive set /$ACCELERATOR/core/nnet::dense_resource_rf_gt_nin_rem0<layer13_t,layer14_t,config14>:acc:rsc -MAP_TO_MODULE {[Register]}
     directive set /$ACCELERATOR/core/nnet::dense_resource_rf_gt_nin_rem0<layer17_t,layer18_t,config18>:acc:rsc -MAP_TO_MODULE {[Register]}
     directive set /$ACCELERATOR/core/nnet::dense_resource_rf_gt_nin_rem0<layer21_t,layer22_t,config22>:acc:rsc -MAP_TO_MODULE {[Register]}
+
+    directive set /ad03_cxx_catapult/w2.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/b4.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/w14.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/w22.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/s4.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/w6.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/s8.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/b8.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/w10.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/s12.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/b12.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/s16.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/b16.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/w18.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/s20.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/b20.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/nnet::dense_resource_rf_gt_nin_rem0<layer9_t,layer10_t,config10>:acc.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/nnet::dense_resource_rf_gt_nin_rem0<layer17_t,layer18_t,config18>:acc.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/nnet::dense_resource_rf_gt_nin_rem0<layer21_t,layer22_t,config22>:acc.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/nnet::dense_resource_rf_gt_nin_rem0<input_t,layer2_t,config2>:outidx.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/nnet::dense_resource_rf_gt_nin_rem0<layer5_t,layer6_t,config6>:outidx.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/nnet::dense_resource_rf_gt_nin_rem0<layer9_t,layer10_t,config10>:outidx.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/nnet::dense_resource_rf_gt_nin_rem0<layer13_t,layer14_t,config14>:outidx.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/nnet::dense_resource_rf_gt_nin_rem0<layer17_t,layer18_t,config18>:outidx.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /ad03_cxx_catapult/nnet::dense_resource_rf_gt_nin_rem0<layer21_t,layer22_t,config22>:outidx.rom:rsc -MAP_TO_MODULE {[Register]}
 
     # Loops
     # 1 function
