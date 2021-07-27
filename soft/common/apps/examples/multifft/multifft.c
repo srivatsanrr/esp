@@ -110,15 +110,15 @@ int main(int argc, char **argv)
 	float *gold;
 	token_t *buf;
 
-        const int ERROR_COUNT_TH = 0.001;
-
+    const int ERROR_COUNT_TH = 0.001;
 	int k;
 
-	init_parameters();
+    init_parameters();
 
     buf = (token_t *) esp_alloc(NACC * size);
 	gold = malloc(NACC * out_len * sizeof(float));
-	init_buffer(buf, gold, false, false);
+
+    init_buffer(buf, gold, false, false);
 
     printf("\n====== Non coherent DMA ======\n\n");
 	printf("  .len = %d\n", len);
@@ -128,9 +128,33 @@ int main(int argc, char **argv)
 	scanf("%c", &key);
 
 	cfg_nc[0].hw_buf = buf;;
+
+    //ESP MONITORS: EXAMPLE #1
+    //read a single monitor from the tile number and monitor offset
+
+    //statically declare monitor arg structure
+    esp_monitor_args_t mon_args;
+
+    //set up argument structure using READ_SINGLE mode
+    //the off-chip memory accesses are read from the memory tile at the DDR_WORD_TRANSFER monitor
+    const int MEM_TILE_IDX = 0;
+    mon_args.read_mode = ESP_MON_READ_SINGLE;
+    mon_args.tile_index = MEM_TILE_IDX;
+    mon_args.mon_index = MON_DDR_WORD_TRANSFER_INDEX;
+
+    //in the READ_SINGLE mode, the monitor value is returned directly
+    //read before and after
+    unsigned int ddr_accesses_start, ddr_accesses_end;
+    ddr_accesses_start = esp_monitor(mon_args, NULL);
     esp_run(cfg_nc, 1);
+    ddr_accesses_end = esp_monitor(mon_args, NULL);
 
 	printf("\n  ** DONE **\n");
+
+    //calculate differnce, accounting for overflow
+    unsigned int ddr_accesses_diff;
+    ddr_accesses_diff = sub_monitor_vals(ddr_accesses_start, ddr_accesses_end);
+    printf("Off-chip memory accesses: %d\n", ddr_accesses_diff);
 
 	errors = validate_buffer(&buf[out_offset], gold, false);
 
@@ -151,11 +175,32 @@ int main(int argc, char **argv)
 
 	printf("  ** Press ENTER to START ** ");
 	scanf("%c", &key);
-	
+
+    //ESP MONITORS: EXAMPLE #2
+    //read all monitors on the SoC
+
+    //statically declare monitor vals structures
+    esp_monitor_vals_t vals_start, vals_end;
+
+    //set read_mode to ALL
+    mon_args.read_mode = ESP_MON_READ_ALL;
+
     cfg_llc[0].hw_buf = buf;
-	esp_run(cfg_llc, 1);
 
 	printf("\n  ** DONE **\n");
+
+    //values written into vals struct argument
+    esp_monitor(mon_args, &vals_start);
+    esp_run(cfg_llc, 1);
+    esp_monitor(mon_args, &vals_end);
+
+    //calculate difference of all values
+    esp_monitor_vals_t vals_diff;
+    vals_diff = esp_monitor_diff(vals_start, vals_end);
+
+    FILE *fp = fopen("multifft_esp_mon_all.txt", "w");
+    esp_monitor_print(mon_args, vals_diff, fp);
+    fclose(fp);
 
 	errors = validate_buffer(&buf[out_offset], gold, false);
 
@@ -177,10 +222,59 @@ int main(int argc, char **argv)
 	printf("  ** Press ENTER to START ** ");
 	scanf("%c", &key);
 
+    //ESP MONITORS: EXAMPLE #3
+    //read a specified subset of the monitors on the SoC
+
+    //dynamically allocate monitor arg structure
+    esp_monitor_vals_t *vals_start_ptr = esp_monitor_vals_alloc();
+    esp_monitor_vals_t *vals_end_ptr = esp_monitor_vals_alloc();
+
+    //set read_mode to MANY
+    mon_args.read_mode = ESP_MON_READ_MANY;
+    mon_args.read_mask = 0;
+
+    //enable reading memory accesses
+    mon_args.read_mask |= 1 << ESP_MON_READ_DDR_ACCESSES;
+
+    //enable reading L2 statistics
+    mon_args.read_mask |= 1 << ESP_MON_READ_L2_STATS;
+
+    //enable reading LLC statistics
+    mon_args.read_mask |= 1 << ESP_MON_READ_LLC_STATS;
+
+    //enable reading acc statistics - requires the index of the accelerator
+    mon_args.acc_index = 0;
+    mon_args.read_mask |= 1 << ESP_MON_READ_ACC_STATS;
+
+    //enable reading noc injections - requires the index of the tile
+    const int ACC_TILE_INDEX = 2;
+    mon_args.tile_index = ACC_TILE_INDEX;
+    mon_args.read_mask |= 1 << ESP_MON_READ_NOC_INJECTS;
+
+    //enable reading noc backpressure on a plane - requires the index of the noc plane
+    const int NOC_PLANE = 0;
+    mon_args.noc_index = NOC_PLANE;
+    mon_args.read_mask |= 1 << ESP_MON_READ_NOC_QUEUE_FULL_PLANE;
+
     cfg_fc[0].hw_buf = buf;
-	esp_run(cfg_fc, 1);
+
+    //values written into vals struct argument
+    esp_monitor(mon_args, vals_start_ptr);
+    esp_run(cfg_fc, 1);
+    esp_monitor(mon_args, vals_end_ptr);
 
 	printf("\n  ** DONE **\n");
+
+   //calculate difference of all values
+    vals_diff = esp_monitor_diff(*vals_start_ptr, *vals_end_ptr);
+
+    //write results to file
+    fp = fopen("multifft_esp_mon_many.txt", "w");
+    esp_monitor_print(mon_args, vals_diff, fp);
+    fclose(fp);
+
+    //when done with monitors, free all allocated structures, and unmap the address space
+    esp_monitor_free();
 
 	errors = validate_buffer(&buf[out_offset], gold, false);
 
@@ -190,7 +284,6 @@ int main(int argc, char **argv)
 		printf("  + TEST PASS: not exceeding error count threshold\n");
 
 	printf("\n============\n\n");
-
 
 	/* Parallel test */
 	for (k = 0; k < NACC; k++) {

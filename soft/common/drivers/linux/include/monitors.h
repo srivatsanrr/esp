@@ -88,9 +88,11 @@ typedef struct esp_monitor_args {
     uint16_t read_mask;
     //tile_no for SINGLE, L2_STATS, NOC_QUEUE_FULL_TILE
     //acc_index for ACC_STATS
-    //plane_no for NOC_QUEUE_FULL_PLANE
-    uint8_t index;
+    uint8_t tile_index;
+    uint8_t acc_index;
     uint8_t mon_index;
+    //for NOC_QUEUE_FULL_PLANE
+    uint8_t noc_index;
 } esp_monitor_args_t;
 
 typedef struct esp_mon_alloc_node {

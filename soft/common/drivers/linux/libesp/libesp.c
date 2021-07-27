@@ -341,7 +341,7 @@ unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals)
 
     if (args.read_mode == ESP_MON_READ_SINGLE){
 
-        return read_monitor(args.index, args.mon_index);
+        return read_monitor(args.tile_index, args.mon_index);
 
     } else if (args.read_mode == ESP_MON_READ_ALL){
 
@@ -398,6 +398,10 @@ unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals)
         for (t = 0; t < SOC_NACC; t++) {
             tile = acc_locs[t].row * SOC_COLS + acc_locs[t].col;
             vals->acc_stats[t].acc_tlb = read_monitor(tile, MON_ACC_TLB_INDEX);
+            vals->acc_stats[t].acc_mem_lo = read_monitor(tile, MON_ACC_MEM_LO_INDEX);
+            vals->acc_stats[t].acc_mem_hi = read_monitor(tile, MON_ACC_MEM_HI_INDEX);
+            vals->acc_stats[t].acc_tot_lo = read_monitor(tile, MON_ACC_TOT_LO_INDEX);
+            vals->acc_stats[t].acc_tot_hi = read_monitor(tile, MON_ACC_TOT_HI_INDEX);
         }
 
 #endif
@@ -425,15 +429,14 @@ unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals)
 #endif
         for (t = 0; t < SOC_NTILES; t++)
             write_burst_reg(t, 0);
-#ifdef __riscv
-        __asm__ __volatile__("fence\n");
-#else
-        __asm__ __volatile__("membar\n");
-#endif
 
         return 0;
 
     } else {
+
+        memset(vals, 0, sizeof(esp_monitor_vals_t));
+        for (t = 0; t < SOC_NTILES; t++)
+            write_burst_reg(t, 1);
 
 #ifdef __riscv
         __asm__ __volatile__("fence\n");
@@ -489,31 +492,35 @@ unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals)
         //acc stats
 #ifdef ACCS_PRESENT
         if (args.read_mask & (1 << ESP_MON_READ_ACC_STATS)) {
-            tile = acc_locs[args.index].row * SOC_COLS + acc_locs[args.index].col;
-            vals->acc_stats[args.index].acc_tlb = read_monitor(tile, MON_ACC_TLB_INDEX);
+            tile = acc_locs[args.acc_index].row * SOC_COLS + acc_locs[args.acc_index].col;
+            vals->acc_stats[args.acc_index].acc_tlb = read_monitor(tile, MON_ACC_TLB_INDEX);
+            vals->acc_stats[args.acc_index].acc_mem_lo = read_monitor(tile, MON_ACC_MEM_LO_INDEX);
+            vals->acc_stats[args.acc_index].acc_mem_hi = read_monitor(tile, MON_ACC_MEM_HI_INDEX);
+            vals->acc_stats[args.acc_index].acc_tot_lo = read_monitor(tile, MON_ACC_TOT_LO_INDEX);
+            vals->acc_stats[args.acc_index].acc_tot_hi = read_monitor(tile, MON_ACC_TOT_HI_INDEX);
         }
 #endif
 
         //dvfs
         if (args.read_mask & (1 << ESP_MON_READ_DVFS_OP))
         	for (p = 0; p < DVFS_OP_POINTS; p++)
-        		vals->dvfs_op[args.index][p] = read_monitor(args.index, MON_DVFS_BASE_INDEX + p);
+        		vals->dvfs_op[args.tile_index][p] = read_monitor(args.tile_index, MON_DVFS_BASE_INDEX + p);
 
        	//noc inject
         if (args.read_mask & (1 << ESP_MON_READ_NOC_INJECTS))
         	for (p = 0; p < NOC_PLANES; p++)
-        		vals->noc_injects[args.index][p] = read_monitor(args.index, MON_NOC_TILE_INJECT_BASE_INDEX + p);
+        		vals->noc_injects[args.tile_index][p] = read_monitor(args.tile_index, MON_NOC_TILE_INJECT_BASE_INDEX + p);
 
         //noc queue full tile
        	if (args.read_mask & (1 << ESP_MON_READ_NOC_QUEUE_FULL_TILE))
        		for (p = 0; p < NOC_PLANES; p++)
        			for (q = 0; q < NOC_QUEUES; q++)
-       				vals->noc_queue_full[args.index][p][q] = read_monitor(args.index, MON_NOC_QUEUES_FULL_BASE_INDEX + p * NOC_QUEUES + q);
+       				vals->noc_queue_full[args.tile_index][p][q] = read_monitor(args.tile_index, MON_NOC_QUEUES_FULL_BASE_INDEX + p * NOC_QUEUES + q);
 
        	if (args.read_mask & (1 << ESP_MON_READ_NOC_QUEUE_FULL_PLANE))
        		for (q = 0; q < NOC_QUEUES; q++)
        			for (t = 0; t < SOC_NTILES; t++)
-       				vals->noc_queue_full[t][args.index][q] = read_monitor(t, MON_NOC_QUEUES_FULL_BASE_INDEX + args.index * NOC_QUEUES + q);
+       				vals->noc_queue_full[t][args.noc_index][q] = read_monitor(t, MON_NOC_QUEUES_FULL_BASE_INDEX + args.noc_index * NOC_QUEUES + q);
 
 #ifdef __riscv
         __asm__ __volatile__("fence\n");
@@ -522,14 +529,204 @@ unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals)
 #endif
         for (t = 0; t < SOC_NTILES; t++)
             write_burst_reg(t, 0);
-#ifdef __riscv
-        __asm__ __volatile__("fence\n");
-#else
-        __asm__ __volatile__("membar\n");
-#endif
 
          return 0;
 
+    }
+}
+
+uint32_t sub_monitor_vals (uint32_t val_start, uint32_t val_end)
+{
+    if (val_end >= val_start)
+        return val_end - val_start;
+    else
+        return (0xFFFFFFFF - val_start + val_end);
+}
+
+esp_monitor_vals_t esp_monitor_diff(esp_monitor_vals_t vals_start, esp_monitor_vals_t vals_end)
+{
+    esp_monitor_vals_t vals_diff;
+    int t, p, q, tile;
+
+    for (t = 0; t < SOC_NMEM; t++)
+        vals_diff.ddr_accesses[t] = sub_monitor_vals(vals_start.ddr_accesses[t], vals_end.ddr_accesses[t]);
+
+    //mem_reqs
+    for (t = 0; t < SOC_NMEM; t++){
+        tile = mem_locs[t].row * SOC_COLS + mem_locs[t].col;
+        vals_diff.mem_reqs[t].coh_reqs = sub_monitor_vals(vals_start.mem_reqs[t].coh_reqs, vals_end.mem_reqs[t].coh_reqs);
+        vals_diff.mem_reqs[t].coh_fwds = sub_monitor_vals(vals_start.mem_reqs[t].coh_fwds, vals_end.mem_reqs[t].coh_fwds);
+        vals_diff.mem_reqs[t].coh_rsps_rcv = sub_monitor_vals(vals_start.mem_reqs[t].coh_rsps_rcv, vals_end.mem_reqs[t].coh_rsps_rcv);
+        vals_diff.mem_reqs[t].coh_rsps_snd = sub_monitor_vals(vals_start.mem_reqs[t].coh_rsps_snd, vals_end.mem_reqs[t].coh_rsps_snd);
+        vals_diff.mem_reqs[t].dma_reqs = sub_monitor_vals(vals_start.mem_reqs[t].dma_reqs, vals_end.mem_reqs[t].dma_reqs);
+        vals_diff.mem_reqs[t].dma_rsps = sub_monitor_vals(vals_start.mem_reqs[t].dma_rsps, vals_end.mem_reqs[t].dma_rsps);
+        vals_diff.mem_reqs[t].coh_dma_reqs = sub_monitor_vals(vals_start.mem_reqs[t].coh_dma_reqs, vals_end.mem_reqs[t].coh_dma_reqs);
+        vals_diff.mem_reqs[t].coh_dma_rsps = sub_monitor_vals(vals_start.mem_reqs[t].coh_dma_rsps, vals_end.mem_reqs[t].coh_dma_rsps);
+    }
+
+    //l2 stats
+    for (t = 0; t < SOC_NCPU; t++) {
+        tile = cpu_locs[t].row * SOC_COLS + cpu_locs[t].col;
+        vals_diff.l2_stats[tile].hits = sub_monitor_vals(vals_start.l2_stats[tile].hits, vals_end.l2_stats[tile].hits);
+        vals_diff.l2_stats[tile].misses = sub_monitor_vals(vals_start.l2_stats[tile].misses, vals_end.l2_stats[tile].misses);
+    }
+#ifdef ACCS_PRESENT
+    for (t = 0; t < SOC_NACC; t++) {
+        if (acc_has_l2[t]) {
+            tile = acc_locs[t].row * SOC_COLS + acc_locs[t].col;
+            vals_diff.l2_stats[tile].hits = sub_monitor_vals(vals_start.l2_stats[tile].hits, vals_end.l2_stats[tile].hits);
+            vals_diff.l2_stats[tile].misses = sub_monitor_vals(vals_start.l2_stats[tile].misses, vals_end.l2_stats[tile].misses);
+        }
+    }
+#endif
+
+    //llc stats
+    for (t = 0; t < SOC_NMEM; t++) {
+        tile = mem_locs[t].row * SOC_COLS + mem_locs[t].col;
+        vals_diff.l2_stats[tile].hits = sub_monitor_vals(vals_start.l2_stats[tile].hits, vals_end.l2_stats[tile].hits);
+        vals_diff.l2_stats[tile].misses = sub_monitor_vals(vals_start.l2_stats[tile].misses, vals_end.l2_stats[tile].misses);
+    }
+
+    //acc stats
+#ifdef ACCS_PRESENT
+    for (t = 0; t < SOC_NACC; t++) {
+        tile = acc_locs[t].row * SOC_COLS + acc_locs[t].col;
+        //accelerator counters are cleared at the start of an invocation, so merely report the final count
+        vals_diff.acc_stats[t].acc_tlb = vals_end.acc_stats[t].acc_tlb;
+        vals_diff.acc_stats[t].acc_mem_lo = vals_end.acc_stats[t].acc_mem_lo;
+        vals_diff.acc_stats[t].acc_mem_hi = vals_end.acc_stats[t].acc_mem_hi;
+        vals_diff.acc_stats[t].acc_tot_lo = vals_end.acc_stats[t].acc_tot_lo;
+        vals_diff.acc_stats[t].acc_tot_hi = vals_end.acc_stats[t].acc_tot_hi;
+    }
+
+#endif
+
+    //dvfs
+    for (p = 0; p < DVFS_OP_POINTS; p++)
+        for (t = 0; t < SOC_NTILES; t++)
+        vals_diff.dvfs_op[t][p] = sub_monitor_vals(vals_start.dvfs_op[t][p], vals_end.dvfs_op[t][p]);
+
+    //noc inject
+    for (p = 0; p < NOC_PLANES; p++)
+        for (t = 0; t < SOC_NTILES; t++)
+        vals_diff.noc_injects[t][p] = sub_monitor_vals(vals_start.noc_injects[t][p], vals_end.noc_injects[t][p]);
+
+    //noc queue full tile
+    for (p = 0; p < NOC_PLANES; p++)
+        for (q = 0; q < NOC_QUEUES; q++)
+            for (t = 0; t < SOC_NTILES; t++)
+                vals_diff.noc_queue_full[t][p][q] = sub_monitor_vals(vals_start.noc_queue_full[t][p][q], vals_end.noc_queue_full[t][p][q]);
+
+    return vals_diff;
+}
+
+void esp_monitor_print(esp_monitor_args_t args, esp_monitor_vals_t vals, FILE *fp)
+{
+    int t, p, q, tile;
+    printf("Writing esp_monitor stats to specified file...\n");
+
+    fprintf(fp, "***************************************************\n");
+    fprintf(fp, "******************ESP MONITOR STATS****************\n");
+    fprintf(fp, "***************************************************\n");
+
+    fprintf(fp, "\n********************MEMORY STATS*******************\n");
+    if (args.read_mode == ESP_MON_READ_ALL || (args.read_mask & (1 << ESP_MON_READ_DDR_ACCESSES)))
+        for (t = 0; t < SOC_NMEM; t++)
+            fprintf(fp, "Off-chip memory accesses at mem tile %d: %d\n", t, vals.ddr_accesses[t]);
+
+    //mem_reqs
+    if (args.read_mode == ESP_MON_READ_ALL || (args.read_mask & (1 << ESP_MON_READ_MEM_REQS)))
+        for (t = 0; t < SOC_NMEM; t++){
+            tile = mem_locs[t].row * SOC_COLS + mem_locs[t].col;
+            fprintf(fp, "Coherence requests to LLC %d: %d\n", t, vals.mem_reqs[t].coh_reqs);
+            fprintf(fp, "Coherence forwards from LLC %d: %d\n", t, vals.mem_reqs[t].coh_fwds);
+            fprintf(fp, "Coherence responses received by LLC %d: %d\n", t, vals.mem_reqs[t].coh_rsps_rcv);
+            fprintf(fp, "Coherence responses sent by LLC %d: %d\n", t, vals.mem_reqs[t].coh_rsps_snd);
+            fprintf(fp, "DMA requests to mem tile %d: %d\n", t, vals.mem_reqs[t].dma_reqs);
+            fprintf(fp, "DMA responses from mem tile %d: %d\n", t, vals.mem_reqs[t].dma_rsps);
+            fprintf(fp, "Coherent DMA requests to LLC %d: %d\n", t, vals.mem_reqs[t].coh_dma_reqs);
+            fprintf(fp, "Coherent DMA responses from LLC %d: %d\n", t, vals.mem_reqs[t].coh_dma_rsps);
+        }
+
+    fprintf(fp, "\n********************CACHE STATS********************\n");
+    //l2 stats
+    if (args.read_mode == ESP_MON_READ_ALL || (args.read_mask & (1 << ESP_MON_READ_L2_STATS))){
+        for (t = 0; t < SOC_NCPU; t++) {
+            tile = cpu_locs[t].row * SOC_COLS + cpu_locs[t].col;
+            fprintf(fp, "L2 hits for CPU %d: %d\n", t, vals.l2_stats[tile].hits);
+            fprintf(fp, "L2 misses for CPU %d: %d\n", t, vals.l2_stats[tile].misses);
+        }
+#ifdef ACCS_PRESENT
+        for (t = 0; t < SOC_NACC; t++) {
+            if (acc_has_l2[t]) {
+                tile = acc_locs[t].row * SOC_COLS + acc_locs[t].col;
+                fprintf(fp, "L2 hits for acc %d: %d\n", t, vals.l2_stats[tile].hits);
+                fprintf(fp, "L2 misses for acc %d: %d\n", t, vals.l2_stats[tile].misses);
+            }
+        }
+#endif
+    }
+
+    //llc stats
+    if (args.read_mode == ESP_MON_READ_ALL || (args.read_mask & (1 << ESP_MON_READ_LLC_STATS)))
+        for (t = 0; t < SOC_NMEM; t++) {
+            tile = mem_locs[t].row * SOC_COLS + mem_locs[t].col;
+            fprintf(fp, "Hits at LLC %d: %d\n", t, vals.l2_stats[tile].hits);
+            fprintf(fp, "Misses at LLC %d: %d\n", t, vals.l2_stats[tile].misses);
+        }
+
+    fprintf(fp, "\n****************ACCELERATOR STATS******************\n");
+    //acc stats
+#ifdef ACCS_PRESENT
+    if (args.read_mode == ESP_MON_READ_ALL){
+        for (t = 0; t < SOC_NACC; t++) {
+            tile = acc_locs[t].row * SOC_COLS + acc_locs[t].col;
+            fprintf(fp, "Accelerator %d TLB-loading cycles: %d\n", t, vals.acc_stats[t].acc_tlb);
+            fprintf(fp, "Accelerator %d mem cycles: %llu\n", t, ((unsigned long long) vals.acc_stats[t].acc_mem_lo) + (((unsigned long long) vals.acc_stats[t].acc_mem_hi) << 32));
+            fprintf(fp, "Accelerator %d total cycles: %llu\n", t, ((unsigned long long) vals.acc_stats[t].acc_tot_lo) + (((unsigned long long) vals.acc_stats[t].acc_tot_hi) << 32));
+        }
+    } else if (args.read_mask & (1 << ESP_MON_READ_LLC_STATS)) {
+        fprintf(fp, "Accelerator %d TLB-loading cycles: %d\n", t, vals.acc_stats[args.acc_index].acc_tlb);
+        fprintf(fp, "Accelerator %d mem cycles: %llu\n", t, ((unsigned long long) vals.acc_stats[args.acc_index].acc_mem_lo) + (((unsigned long long) vals.acc_stats[args.acc_index].acc_mem_hi) << 32));
+        fprintf(fp, "Accelerator %d total cycles: %llu\n", t, ((unsigned long long) vals.acc_stats[args.acc_index].acc_tot_lo) + (((unsigned long long) vals.acc_stats[args.acc_index].acc_tot_hi) << 32));
+    }
+#endif
+
+    fprintf(fp, "\n*********************DVFS STATS********************\n");
+    //dvfs
+    if (args.read_mode == ESP_MON_READ_ALL) {
+        for (t = 0; t < SOC_NTILES; t++)
+            for (p = 0; p < DVFS_OP_POINTS; p++)
+                fprintf(fp, "DVFS Cycles for tile %d at operating point %d: %d\n", t, p, vals.dvfs_op[t][p]);
+    } else if (args.read_mask & (1 << ESP_MON_READ_DVFS_OP)) {
+        for (p = 0; p < DVFS_OP_POINTS; p++)
+            fprintf(fp, "DVFS Cycles for tile %d at operating point %d: %d\n", args.tile_index, p, vals.dvfs_op[args.tile_index][p]);
+   }
+
+    fprintf(fp, "\n*********************NOC STATS*********************\n");
+    //noc inject
+    if (args.read_mode == ESP_MON_READ_ALL) {
+        for (t = 0; t < SOC_NTILES; t++)
+            for (p = 0; p < NOC_PLANES; p++)
+                fprintf(fp, "NoC packets injected at tile %d on plane %d: %d\n", t, p, vals.noc_injects[t][p]);
+    } else if (args.read_mask & (1 << ESP_MON_READ_NOC_INJECTS)) {
+        for (p = 0; p < NOC_PLANES; p++)
+            fprintf(fp, "NoC packets injected at tile %d on plane %d: %d\n", args.tile_index, p, vals.noc_injects[args.tile_index][p]);
+    }
+    //noc queue full tile
+    if (args.read_mode == ESP_MON_READ_ALL) {
+        for (t = 0; t < SOC_NTILES; t++)
+            for (p = 0; p < NOC_PLANES; p++)
+                for (q = 0; q < NOC_QUEUES; q++)
+                    fprintf(fp, "NoC backpressure cycles at tile %d on plane %d for queue %d: %d\n", t, p, q, vals.noc_queue_full[t][p][q]);
+    } else if (args.read_mask & (1 << ESP_MON_READ_NOC_QUEUE_FULL_TILE)) {
+         for (p = 0; p < NOC_PLANES; p++)
+            for (q = 0; q < NOC_QUEUES; q++)
+                fprintf(fp, "NoC backpressure cycles at tile %d on plane %d for queue %d: %d\n", args.tile_index, p, q, vals.noc_queue_full[args.tile_index][p][q]);
+    } else if (args.read_mask & (1 << ESP_MON_READ_NOC_QUEUE_FULL_PLANE)) {
+        for (t = 0; t < SOC_NTILES; t++)
+            for (q = 0; q < NOC_QUEUES; q++)
+                fprintf(fp, "NoC backpressure cycles at tile %d on plane %d for queue %d: %d\n", t, args.noc_index, q, vals.noc_queue_full[t][args.noc_index][q]);
     }
 }
 
