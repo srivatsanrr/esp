@@ -346,65 +346,65 @@ if {$opt(hsynth)} {
     directive set /$ACCELERATOR/acc_done:rsc -MAP_TO_MODULE ccs_ioport.ccs_sync_out_vld
 
     # Arrays
-    directive set /crypto_cxx_catapult/sha1:h.rom:rsc -MAP_TO_MODULE {[Register]}
-    if {$TECH eq "gf12"} {
-        directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -MAP_TO_MODULE GF12_SRAM_SP_2048x32.GF12_SRAM_SP_2048x32
-    } else {
-        directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
-    }
-    directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -GEN_EXTERNAL_ENABLE true
-    directive set /crypto_cxx_catapult/core/sha1_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/sha1:h:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/sha1:data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/sha1:h.rom:rsc -MAP_TO_MODULE {[Register]}
+    #if {$TECH eq "gf12"} {
+    #    directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -MAP_TO_MODULE GF12_SRAM_SP_2048x32.GF12_SRAM_SP_2048x32
+    #} else {
+    #    directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
+    #}
+    #directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -GEN_EXTERNAL_ENABLE true
+    #directive set /crypto_cxx_catapult/core/sha1_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/core/sha1:h:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/core/sha1:data:rsc -MAP_TO_MODULE {[Register]}
 
-    if {$TECH eq "gf12"} {
-        directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -MAP_TO_MODULE GF12_SRAM_SP_2048x32.GF12_SRAM_SP_2048x32
-    } else {
-        directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
-    }
-    directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -GEN_EXTERNAL_ENABLE true
-    directive set /crypto_cxx_catapult/core/sha2_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/sha256_block:K256.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/sha256_block#1:K256.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/sha256_block#2:K256.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/sha256:h.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/sha256:h:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/sha256:data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/sha256_block:tmp:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/sha256_block#1:tmp:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/sha256_block#2:tmp:rsc -MAP_TO_MODULE {[Register]}
+    #if {$TECH eq "gf12"} {
+    #    directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -MAP_TO_MODULE GF12_SRAM_SP_2048x32.GF12_SRAM_SP_2048x32
+    #} else {
+    #    directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
+    #}
+    #directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -GEN_EXTERNAL_ENABLE true
+    #directive set /crypto_cxx_catapult/core/sha2_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/sha256_block:K256.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/sha256_block#1:K256.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/sha256_block#2:K256.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/sha256:h.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/core/sha256:h:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/core/sha256:data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/core/sha256_block:tmp:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/core/sha256_block#1:tmp:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /crypto_cxx_catapult/core/sha256_block#2:tmp:rsc -MAP_TO_MODULE {[Register]}
 
-    #directive set /crypto_cxx_catapult/Te2.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/Te3.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/Te0.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/Te1.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/Td0.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/Td1.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/Td2.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/Td3.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/Td4.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/rcon.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_plm_key.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_plm_iv.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes:ekey:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_ecb_ctr_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_ecb_ctr_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_ecb_ctr_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_cbc_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_cbc_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_cbc_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/gcm_init:LL:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/gcm_init:tmp:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/gcm_core:in_tmp:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/gcm_core:out_tmp:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/gcm_core:hash_tmp:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_gcm_cipher:cb:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_gcm_cipher:S:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_gcm_cipher:H:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_gcm_cipher:L:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/aes_gcm_cipher:J:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/Te2.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/Te3.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/Te0.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/Te1.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/Td0.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/Td1.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/Td2.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/Td3.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/Td4.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/rcon.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_plm_key.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_plm_iv.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes:ekey:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_ecb_ctr_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_ecb_ctr_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_ecb_ctr_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_cbc_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_cbc_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_cbc_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/gcm_init:LL:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/gcm_init:tmp:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/gcm_core:in_tmp:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/gcm_core:out_tmp:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/gcm_core:hash_tmp:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_gcm_cipher:cb:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_gcm_cipher:S:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_gcm_cipher:H:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_gcm_cipher:L:rsc -MAP_TO_MODULE {[Register]}
+    directive set /crypto_cxx_catapult/core/aes_gcm_cipher:J:rsc -MAP_TO_MODULE {[Register]}
 
     #directive set /crypto_cxx_catapult/core/rsa_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
     #directive set /crypto_cxx_catapult/core/rsa_plm_e.data:rsc -MAP_TO_MODULE {[Register]}
@@ -415,24 +415,24 @@ if {$opt(hsynth)} {
     # Loops
     directive set /crypto_cxx_catapult/core/main -MERGEABLE false
 
-    directive set /crypto_cxx_catapult/core/SHA1_LOAD_CTRL_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/SHA1_LOAD_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/SHA1_STORE_CTRL_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/SHA1_STORE_LOOP -MERGEABLE false
+    #directive set /crypto_cxx_catapult/core/SHA1_LOAD_CTRL_LOOP -MERGEABLE false
+    #directive set /crypto_cxx_catapult/core/SHA1_LOAD_LOOP -MERGEABLE false
+    #directive set /crypto_cxx_catapult/core/SHA1_STORE_CTRL_LOOP -MERGEABLE false
+    #directive set /crypto_cxx_catapult/core/SHA1_STORE_LOOP -MERGEABLE false
 
-    directive set /crypto_cxx_catapult/core/SHA2_LOAD_CTRL_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/SHA2_LOAD_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/SHA2_STORE_CTRL_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/SHA2_STORE_LOOP -MERGEABLE false
+    #directive set /crypto_cxx_catapult/core/SHA2_LOAD_CTRL_LOOP -MERGEABLE false
+    #directive set /crypto_cxx_catapult/core/SHA2_LOAD_LOOP -MERGEABLE false
+    #directive set /crypto_cxx_catapult/core/SHA2_STORE_CTRL_LOOP -MERGEABLE false
+    #directive set /crypto_cxx_catapult/core/SHA2_STORE_LOOP -MERGEABLE false
 
-    #directive set /crypto_cxx_catapult/core/AES_LOAD_KEY_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/AES_LOAD_KEY_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/AES_LOAD_IV_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/AES_LOAD_IV_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/AES_LOAD_INPUT_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/AES_LOAD_INPUT_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/AES_STORE_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/AES_STORE_LOOP -MERGEABLE false
+    directive set /crypto_cxx_catapult/core/AES_LOAD_KEY_CTRL_LOOP -MERGEABLE false
+    directive set /crypto_cxx_catapult/core/AES_LOAD_KEY_LOOP -MERGEABLE false
+    directive set /crypto_cxx_catapult/core/AES_LOAD_IV_CTRL_LOOP -MERGEABLE false
+    directive set /crypto_cxx_catapult/core/AES_LOAD_IV_LOOP -MERGEABLE false
+    directive set /crypto_cxx_catapult/core/AES_LOAD_INPUT_CTRL_LOOP -MERGEABLE false
+    directive set /crypto_cxx_catapult/core/AES_LOAD_INPUT_LOOP -MERGEABLE false
+    directive set /crypto_cxx_catapult/core/AES_STORE_CTRL_LOOP -MERGEABLE false
+    directive set /crypto_cxx_catapult/core/AES_STORE_LOOP -MERGEABLE false
 
     #directive set /crypto_cxx_catapult/core/RSA_LOAD_IN_CTRL_LOOP -MERGEABLE false
     #directive set /crypto_cxx_catapult/core/RSA_LOAD_IN_LOOP -MERGEABLE false
