@@ -269,7 +269,8 @@ if {$opt(hsynth)} {
     solution library remove *
     if {$TECH eq "gf12"} { 
         #solution library add sc9mcpp84_12lp_base_rvt_c14_tt_nominal_max_0p80v_25c_dc -- -rtlsyntool DesignCompiler -vendor GlobalFoundries -technology gf12nm
-        solution library add sc9mcpp84_12lp_base_lvt_c14_tt_nominal_max_0p80v_25c_dc -- -rtlsyntool DesignCompiler -vendor VENDOR -technology technology
+        #solution library add sc9mcpp84_12lp_base_lvt_c14_tt_nominal_max_0p80v_25c_dc -- -rtlsyntool DesignCompiler -vendor VENDOR -technology technology
+        solution library add sc9mcpp84_12lp_base_rvt_c14_tt_nominal_max_0p80v_25c_dc -- -rtlsyntool DesignCompiler -vendor VENDOR -technology technology
         #solution library add GF12_SRAM_SP_1024x8
         #solution library add GF12_SRAM_SP_16384x32
         #solution library add GF12_SRAM_SP_16384x64
@@ -331,6 +332,8 @@ if {$opt(hsynth)} {
     # BUGFIX: This prevents the creation of the empty module CGHpart. In the
     # next releases of Catapult HLS, this may be fixed.
     directive set /$ACCELERATOR -GATE_EFFORT normal
+
+    directive set -DESIGN_GOAL area
 
     go assembly
 
