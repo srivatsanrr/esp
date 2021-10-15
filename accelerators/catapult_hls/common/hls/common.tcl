@@ -37,7 +37,7 @@ if {[lsearch $fpga_techs $TECH] >= 0} {
     }
     if {$TECH eq "gf12"} {
 	set COMPONENT_LIBS_SEARCH_PATH \
-            {../../../../../tech/gf12/lib-catapult \
+            {../../../../../tech/gf12/lib-catapult-harvard \
             ../../../common/memgen/GF12_SRAM_SP_256x32 \
             ../../../common/memgen/GF12_SRAM_SP_256x64 \
             ../../../common/memgen/GF12_SRAM_SP_256x16 \
