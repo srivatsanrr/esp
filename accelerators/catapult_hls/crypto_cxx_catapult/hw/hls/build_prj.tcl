@@ -386,43 +386,43 @@ if {$opt(hsynth)} {
     #directive set /$ACCELERATOR/core/sha256_block#1:tmp:rsc -MAP_TO_MODULE {[Register]}
     #directive set /$ACCELERATOR/core/sha256_block#2:tmp:rsc -MAP_TO_MODULE {[Register]}
 
-    directive set /$ACCELERATOR/Te2.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/Te3.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/Te0.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/Te1.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/Td0.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/Td1.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/Td2.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/Td3.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/Td4.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/rcon.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_plm_key.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_plm_iv.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes:ekey:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_ecb_ctr_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_ecb_ctr_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_ecb_ctr_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_cbc_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_cbc_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_cbc_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/gcm_init:LL:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/gcm_init:tmp:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/gcm_core:in_tmp:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/gcm_core:out_tmp:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/gcm_core:hash_tmp:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_gcm_cipher:cb:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_gcm_cipher:S:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_gcm_cipher:H:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_gcm_cipher:L:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/aes_gcm_cipher:J:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/Te2.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/Te3.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/Te0.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/Te1.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/Td0.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/Td1.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/Td2.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/Td3.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/Td4.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/rcon.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_plm_key.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_plm_iv.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes:ekey:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_ecb_ctr_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_ecb_ctr_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_ecb_ctr_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_cbc_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_cbc_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_cbc_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/gcm_init:LL:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/gcm_init:tmp:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/gcm_core:in_tmp:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/gcm_core:out_tmp:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/gcm_core:hash_tmp:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_gcm_cipher:cb:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_gcm_cipher:S:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_gcm_cipher:H:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_gcm_cipher:L:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/aes_gcm_cipher:J:rsc -MAP_TO_MODULE {[Register]}
 
-    #directive set /$ACCELERATOR/core/rsa_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/core/rsa_plm_e.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/core/rsa_plm_n.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/core/rsa_plm_r.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/core/rsa_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/rsa_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/rsa_plm_e.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/rsa_plm_n.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/rsa_plm_r.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/rsa_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
 
     # Loops
     directive set /$ACCELERATOR/core/main -MERGEABLE false
@@ -437,25 +437,25 @@ if {$opt(hsynth)} {
     #directive set /$ACCELERATOR/core/SHA2_STORE_CTRL_LOOP -MERGEABLE false
     #directive set /$ACCELERATOR/core/SHA2_STORE_LOOP -MERGEABLE false
 
-    directive set /$ACCELERATOR/core/AES_LOAD_KEY_CTRL_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/AES_LOAD_KEY_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/AES_LOAD_IV_CTRL_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/AES_LOAD_IV_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/AES_LOAD_INPUT_CTRL_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/AES_LOAD_INPUT_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/AES_STORE_CTRL_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/AES_STORE_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/AES_LOAD_KEY_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/AES_LOAD_KEY_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/AES_LOAD_IV_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/AES_LOAD_IV_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/AES_LOAD_INPUT_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/AES_LOAD_INPUT_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/AES_STORE_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/AES_STORE_LOOP -MERGEABLE false
 
-    #directive set /$ACCELERATOR/core/RSA_LOAD_IN_CTRL_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/RSA_LOAD_IN_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/RSA_LOAD_E_CTRL_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/RSA_LOAD_E_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/RSA_LOAD_N_CTRL_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/RSA_LOAD_N_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/RSA_LOAD_R_CTRL_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/RSA_LOAD_R_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/RSA_STORE_CTRL_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/RSA_STORE_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/RSA_LOAD_IN_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/RSA_LOAD_IN_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/RSA_LOAD_E_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/RSA_LOAD_E_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/RSA_LOAD_N_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/RSA_LOAD_N_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/RSA_LOAD_R_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/RSA_LOAD_R_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/RSA_STORE_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/RSA_STORE_LOOP -MERGEABLE false
 
     # Loops performance tracing
 

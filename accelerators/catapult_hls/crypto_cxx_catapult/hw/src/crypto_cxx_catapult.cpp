@@ -34,7 +34,6 @@ void sha2_compute_wrapper(uint32 in_bytes, uint32 out_bytes, T1 &input, T2 &outp
 
     sha2(in_bytes, out_bytes, input.data, output.data);
 }
-#endif
 
 void aes_compute_wrapper(uint32 oper_mode, uint32 encryption, uint32 key_bytes, uint32 iv_bytes, uint32 in_bytes, uint32 aad_bytes, uint32 tag_bytes, aes_plm_key_t &key, aes_plm_iv_t &iv, aes_plm_in_t &in, aes_plm_out_t &out, aes_plm_aad_t &aad, aes_plm_tag_t &tag) {
     ESP_REPORT_INFO(VON, "aes_oper_mode: %u", ESP_TO_UINT32(oper_mode));
@@ -44,8 +43,8 @@ void aes_compute_wrapper(uint32 oper_mode, uint32 encryption, uint32 key_bytes, 
 
     aes(oper_mode, encryption, key_bytes, iv_bytes, in_bytes, aad_bytes, tag_bytes, key.data, iv.data, in.data, out.data, aad.data, tag.data);
 }
+#endif
 
-#if 0
 void rsa_compute_wrapper(uint32 encryption, uint32 padding, uint32 pubpriv, uint32 n_bytes, uint32 e_bytes, uint32 in_bytes, rsa_plm_r_t &r, rsa_plm_n_t &n, rsa_plm_e_t &e, rsa_plm_in_t &in, rsa_plm_out_t &out) {
     ESP_REPORT_INFO(VON, "rsa_encryption: %u", ESP_TO_UINT32(encryption));
     ESP_REPORT_INFO(VON, "rsa_padding: %u", ESP_TO_UINT32(padding));
@@ -56,7 +55,6 @@ void rsa_compute_wrapper(uint32 encryption, uint32 padding, uint32 pubpriv, uint
 
     rsa(encryption, padding, pubpriv, n_bytes, e_bytes, in_bytes, r.data, n.data, e.data, in.data, out.data);
 }
-#endif
 
 #define CRYPTO_SHA1_MODE 1
 #define CRYPTO_SHA2_MODE 2
@@ -119,20 +117,18 @@ void CCS_BLOCK(crypto_cxx_catapult)(
     sha1_plm_out_t sha1_plm_out;
     sha2_plm_in_t sha2_plm_in;
     sha2_plm_out_t sha2_plm_out;
-#endif
     aes_plm_key_t aes_plm_key;
     aes_plm_iv_t aes_plm_iv;
     aes_plm_in_t aes_plm_in;
     aes_plm_out_t aes_plm_out;
     aes_plm_aad_t aes_plm_aad;
     aes_plm_tag_t aes_plm_tag;
-#if 0
+#endif
     rsa_plm_in_t rsa_plm_in;
     rsa_plm_e_t rsa_plm_e;
     rsa_plm_n_t rsa_plm_n;
     rsa_plm_r_t rsa_plm_r;
     rsa_plm_out_t rsa_plm_out;
-#endif
 
     // Read accelerator configuration
 #ifndef __SYNTHESIS__
@@ -352,9 +348,7 @@ SHA2_STORE_LOOP:
             }
         }
 
-    } else
-#endif
-    if (crypto_algo == CRYPTO_AES_MODE) {
+    } else if (crypto_algo == CRYPTO_AES_MODE) {
 
         aes_oper_mode = config.aes_oper_mode;
         //aes_encryption = config.aes_encryption;
@@ -570,9 +564,9 @@ AES_STORE_LOOP:
             }
         }
 
-    }
-#if 0
-    else if (crypto_algo == CRYPTO_RSA_MODE) {
+    } else
+#endif
+    if (crypto_algo == CRYPTO_RSA_MODE) {
         rsa_in_bytes = config.rsa_in_bytes;
         rsa_e_bytes = config.rsa_e_bytes;
         rsa_n_bytes = config.rsa_n_bytes;
@@ -831,7 +825,6 @@ RSA_STORE_LOOP:
             }
         }
     }
-#endif
 
     acc_done.sync_out();
 }
