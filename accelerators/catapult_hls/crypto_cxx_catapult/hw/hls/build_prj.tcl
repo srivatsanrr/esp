@@ -71,50 +71,52 @@ flow package option set /SCVerify/USE_NCSIM false
 
 #directive set -DESIGN_GOAL area
 ##directive set -OLD_SCHED false
-#directive set -SPECULATE true
-#directive set -MERGEABLE true
+directive set -SPECULATE true
+directive set -MERGEABLE true
 directive set -REGISTER_THRESHOLD 8192
-#directive set -MEM_MAP_THRESHOLD 32
+directive set -MEM_MAP_THRESHOLD 8192
 #directive set -LOGIC_OPT false
-#directive set -FSM_ENCODING none
+directive set -FSM_ENCODING binary
 #directive set -FSM_BINARY_ENCODING_THRESHOLD 64
-#directive set -REG_MAX_FANOUT 0
-#directive set -NO_X_ASSIGNMENTS true
-#directive set -SAFE_FSM false
-#directive set -REGISTER_SHARING_MAX_WIDTH_DIFFERENCE 8
-#directive set -REGISTER_SHARING_LIMIT 0
-#directive set -ASSIGN_OVERHEAD 0
-#directive set -TIMING_CHECKS true
-#directive set -MUXPATH true
-#directive set -REALLOC true
-#directive set -UNROLL no
-#directive set -IO_MODE super
+directive set -REG_MAX_FANOUT 0
+directive set -NO_X_ASSIGNMENTS true
+directive set -SAFE_FSM false
+##directive set -REGISTER_SHARING_MAX_WIDTH_DIFFERENCE 8
+directive set -REGISTER_SHARING_LIMIT 0
+directive set -ASSIGN_OVERHEAD 0
+directive set -TIMING_CHECKS true
+directive set -MUXPATH true
+directive set -REALLOC true
+directive set -UNROLL no
+directive set -IO_MODE super
 #directive set -CHAN_IO_PROTOCOL standard
 #directive set -ARRAY_SIZE 1024
-#directive set -REGISTER_IDLE_SIGNAL false
-#directive set -IDLE_SIGNAL {}
-#directive set -STALL_FLAG false
-##############################directive set -TRANSACTION_DONE_SIGNAL true
-#directive set -DONE_FLAG {}
-#directive set -READY_FLAG {}
-#directive set -START_FLAG {}
-#directive set -BLOCK_SYNC none
-#directive set -TRANSACTION_SYNC ready
-#directive set -DATA_SYNC none
-#directive set -CLOCKS {clk {-CLOCK_PERIOD 0.0 -CLOCK_EDGE rising -CLOCK_UNCERTAINTY 0.0 -RESET_SYNC_NAME rst -RESET_ASYNC_NAME arst_n -RESET_KIND sync -RESET_SYNC_ACTIVE high -RESET_ASYNC_ACTIVE low -ENABLE_ACTIVE high}}
+directive set -REGISTER_IDLE_SIGNAL false
+directive set -IDLE_SIGNAL {}
+directive set -TRANSACTION_DONE_SIGNAL true
+#directive set -STALL_FLAG {}
+directive set -DONE_FLAG {}
+##directive set -READY_FLAG {}
+directive set -START_FLAG {}
+directive set -BLOCK_SYNC none
+directive set -TRANSACTION_SYNC ready
+directive set -DATA_SYNC none
+##directive set -CLOCKS {clk {-CLOCK_PERIOD 0.0 -CLOCK_EDGE rising -CLOCK_UNCERTAINTY 0.0 -RESET_SYNC_NAME rst -RESET_ASYNC_NAME arst_n -RESET_KIND sync -RESET_SYNC_ACTIVE high -RESET_ASYNC_ACTIVE low -ENABLE_ACTIVE high}}
 directive set -RESET_CLEARS_ALL_REGS true
-#directive set -CLOCK_OVERHEAD 20.000000
-#directive set -OPT_CONST_MULTS use_library
-#directive set -CHARACTERIZE_ROM false
-#directive set -PROTOTYPE_ROM true
-#directive set -ROM_THRESHOLD 64
+directive set -CLOCK_OVERHEAD 20.000000
+directive set -OPT_CONST_MULTS use_library
+directive set -CHARACTERIZE_ROM false
+directive set -PROTOTYPE_ROM true
+directive set -ROM_THRESHOLD 64
 #directive set -CLUSTER_ADDTREE_IN_COUNT_THRESHOLD 0
-#directive set -CLUSTER_OPT_CONSTANT_INPUTS true
-#directive set -CLUSTER_RTL_SYN false
-#directive set -CLUSTER_FAST_MODE false
-#directive set -CLUSTER_TYPE combinational
-#directive set -COMPGRADE fast
-
+directive set -CLUSTER_ADDTREE_IN_WIDTH_THRESHOLD 0
+directive set -CLUSTER_OPT_CONSTANT_INPUTS true
+directive set -CLUSTER_RTL_SYN false
+directive set -CLUSTER_FAST_MODE false
+directive set -CLUSTER_TYPE combinational
+directive set -COMPGRADE fast
+directive set -PIPELINE_RAMP_UP true
+directive set -BUILTIN_MODULARIO false
 # Flag to indicate SCVerify readiness
 set can_simulate 1
 
@@ -302,7 +304,13 @@ if {$opt(hsynth)} {
     #solution library add nangate-45nm_beh -- -rtlsyntool DesignCompiler -vendor Nangate -technology 045nm
 
     # For Catapult 10.5: disable all sequential clock-gating
-    directive set GATE_REGISTERS false
+    #directive set GATE_REGISTERS false
+
+    # Enable clock Gating
+    directive set -GATE_REGISTERS {true}
+    directive set -GATE_EFFORT {high}
+    directive set -GATE_MIN_WIDTH {4}
+    directive set -GATE_EXPAND_MIN_WIDTH {4}
 
     go libraries
 
@@ -331,9 +339,9 @@ if {$opt(hsynth)} {
 
     # BUGFIX: This prevents the creation of the empty module CGHpart. In the
     # next releases of Catapult HLS, this may be fixed.
-    directive set /$ACCELERATOR -GATE_EFFORT normal
+    #directive set /$ACCELERATOR -GATE_EFFORT normal
 
-    directive set -DESIGN_GOAL area
+    #directive set -DESIGN_GOAL area
 
     go assembly
 
@@ -350,16 +358,16 @@ if {$opt(hsynth)} {
     directive set /$ACCELERATOR/acc_done:rsc -MAP_TO_MODULE ccs_ioport.ccs_sync_out_vld
 
     # Arrays
-    #directive set /crypto_cxx_catapult/sha1:h.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/sha1:h.rom:rsc -MAP_TO_MODULE {[Register]}
     #if {$TECH eq "gf12"} {
     #    directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -MAP_TO_MODULE GF12_SRAM_SP_2048x32.GF12_SRAM_SP_2048x32
     #} else {
     #    directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
     #}
     #directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -GEN_EXTERNAL_ENABLE true
-    #directive set /crypto_cxx_catapult/core/sha1_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/sha1:h:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/sha1:data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/sha1_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/sha1:h:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/sha1:data:rsc -MAP_TO_MODULE {[Register]}
 
     #if {$TECH eq "gf12"} {
     #    directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -MAP_TO_MODULE GF12_SRAM_SP_2048x32.GF12_SRAM_SP_2048x32
@@ -367,93 +375,94 @@ if {$opt(hsynth)} {
     #    directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
     #}
     #directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -GEN_EXTERNAL_ENABLE true
-    #directive set /crypto_cxx_catapult/core/sha2_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/sha256_block:K256.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/sha256_block#1:K256.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/sha256_block#2:K256.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/sha256:h.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/sha256:h:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/sha256:data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/sha256_block:tmp:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/sha256_block#1:tmp:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/sha256_block#2:tmp:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/sha2_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/sha256_block:K256.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/sha256_block#1:K256.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/sha256_block#2:K256.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/sha256:h.rom:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/sha256:h:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/sha256:data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/sha256_block:tmp:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/sha256_block#1:tmp:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/sha256_block#2:tmp:rsc -MAP_TO_MODULE {[Register]}
 
-    directive set /crypto_cxx_catapult/Te2.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/Te3.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/Te0.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/Te1.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/Td0.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/Td1.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/Td2.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/Td3.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/Td4.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/rcon.rom:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_plm_key.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_plm_iv.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes:ekey:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_ecb_ctr_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_ecb_ctr_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_ecb_ctr_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_cbc_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_cbc_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_cbc_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/gcm_init:LL:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/gcm_init:tmp:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/gcm_core:in_tmp:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/gcm_core:out_tmp:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/gcm_core:hash_tmp:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_gcm_cipher:cb:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_gcm_cipher:S:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_gcm_cipher:H:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_gcm_cipher:L:rsc -MAP_TO_MODULE {[Register]}
-    directive set /crypto_cxx_catapult/core/aes_gcm_cipher:J:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/Te2.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/Te3.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/Te0.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/Te1.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/Td0.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/Td1.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/Td2.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/Td3.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/Td4.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/rcon.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_plm_key.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_plm_iv.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes:ekey:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_ecb_ctr_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_ecb_ctr_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_ecb_ctr_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_cbc_cipher:tmp_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_cbc_cipher:out_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_cbc_cipher:in_mem:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/gcm_init:LL:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/gcm_init:tmp:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/gcm_core:in_tmp:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/gcm_core:out_tmp:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/gcm_core:hash_tmp:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_gcm_cipher:cb:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_gcm_cipher:S:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_gcm_cipher:H:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_gcm_cipher:L:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/aes_gcm_cipher:J:rsc -MAP_TO_MODULE {[Register]}
 
-    #directive set /crypto_cxx_catapult/core/rsa_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/rsa_plm_e.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/rsa_plm_n.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/rsa_plm_r.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /crypto_cxx_catapult/core/rsa_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/rsa_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/rsa_plm_e.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/rsa_plm_n.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/rsa_plm_r.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/rsa_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
 
     # Loops
-    directive set /crypto_cxx_catapult/core/main -MERGEABLE false
+    directive set /$ACCELERATOR/core/main -MERGEABLE false
 
-    #directive set /crypto_cxx_catapult/core/SHA1_LOAD_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/SHA1_LOAD_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/SHA1_STORE_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/SHA1_STORE_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/SHA1_LOAD_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/SHA1_LOAD_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/SHA1_STORE_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/SHA1_STORE_LOOP -MERGEABLE false
 
-    #directive set /crypto_cxx_catapult/core/SHA2_LOAD_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/SHA2_LOAD_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/SHA2_STORE_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/SHA2_STORE_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/SHA2_LOAD_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/SHA2_LOAD_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/SHA2_STORE_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/SHA2_STORE_LOOP -MERGEABLE false
 
-    directive set /crypto_cxx_catapult/core/AES_LOAD_KEY_CTRL_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/AES_LOAD_KEY_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/AES_LOAD_IV_CTRL_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/AES_LOAD_IV_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/AES_LOAD_INPUT_CTRL_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/AES_LOAD_INPUT_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/AES_STORE_CTRL_LOOP -MERGEABLE false
-    directive set /crypto_cxx_catapult/core/AES_STORE_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/AES_LOAD_KEY_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/AES_LOAD_KEY_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/AES_LOAD_IV_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/AES_LOAD_IV_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/AES_LOAD_INPUT_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/AES_LOAD_INPUT_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/AES_STORE_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/AES_STORE_LOOP -MERGEABLE false
 
-    #directive set /crypto_cxx_catapult/core/RSA_LOAD_IN_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/RSA_LOAD_IN_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/RSA_LOAD_E_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/RSA_LOAD_E_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/RSA_LOAD_N_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/RSA_LOAD_N_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/RSA_LOAD_R_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/RSA_LOAD_R_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/RSA_STORE_CTRL_LOOP -MERGEABLE false
-    #directive set /crypto_cxx_catapult/core/RSA_STORE_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_IN_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_IN_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_E_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_E_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_N_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_N_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_R_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_R_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_STORE_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_STORE_LOOP -MERGEABLE false
 
     # Loops performance tracing
 
     # Area vs Latency Goals
-    directive set /$ACCELERATOR/core -EFFORT_LEVEL high
-    directive set /$ACCELERATOR/core -DESIGN_GOAL Latency
+    #directive set /$ACCELERATOR/core -EFFORT_LEVEL high
+    directive set /$ACCELERATOR/core -DESIGN_GOAL area
+    #directive set /$ACCELERATOR/core -DESIGN_GOAL latency
 
     if {$opt(debug) != 1} {
         go architect
