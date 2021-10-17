@@ -72,7 +72,7 @@ flow package option set /SCVerify/USE_NCSIM false
 #directive set -DESIGN_GOAL area
 ##directive set -OLD_SCHED false
 directive set -SPECULATE true
-directive set -MERGEABLE true
+#directive set -MERGEABLE true
 directive set -REGISTER_THRESHOLD 8192
 directive set -MEM_MAP_THRESHOLD 8192
 #directive set -LOGIC_OPT false
@@ -273,6 +273,7 @@ if {$opt(hsynth)} {
         #solution library add sc9mcpp84_12lp_base_rvt_c14_tt_nominal_max_0p80v_25c_dc -- -rtlsyntool DesignCompiler -vendor GlobalFoundries -technology gf12nm
         #solution library add sc9mcpp84_12lp_base_lvt_c14_tt_nominal_max_0p80v_25c_dc -- -rtlsyntool DesignCompiler -vendor VENDOR -technology technology
         solution library add sc9mcpp84_12lp_base_rvt_c14_tt_nominal_max_0p80v_25c_dc -- -rtlsyntool DesignCompiler -vendor VENDOR -technology technology
+        solution library add sram_2048x32
         #solution library add GF12_SRAM_SP_1024x8
         #solution library add GF12_SRAM_SP_16384x32
         #solution library add GF12_SRAM_SP_16384x64
@@ -358,33 +359,35 @@ if {$opt(hsynth)} {
     directive set /$ACCELERATOR/acc_done:rsc -MAP_TO_MODULE ccs_ioport.ccs_sync_out_vld
 
     # Arrays
-    #directive set /$ACCELERATOR/sha1:h.rom:rsc -MAP_TO_MODULE {[Register]}
-    #if {$TECH eq "gf12"} {
-    #    directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -MAP_TO_MODULE GF12_SRAM_SP_2048x32.GF12_SRAM_SP_2048x32
-    #} else {
-    #    directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
-    #}
-    #directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -GEN_EXTERNAL_ENABLE true
-    #directive set /$ACCELERATOR/core/sha1_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/core/sha1:h:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/core/sha1:data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/sha1:h.rom:rsc -MAP_TO_MODULE {[Register]}
+    if {$TECH eq "gf12"} {
+        #directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -MAP_TO_MODULE GF12_SRAM_SP_2048x32.GF12_SRAM_SP_2048x32
+        directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -MAP_TO_MODULE sram_2048x32.sram_2048x32
+    } else {
+        directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
+    }
+    directive set /$ACCELERATOR/core/sha1_plm_in.data:rsc -GEN_EXTERNAL_ENABLE true
+    directive set /$ACCELERATOR/core/sha1_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/sha1:h:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/sha1:data:rsc -MAP_TO_MODULE {[Register]}
 
-    #if {$TECH eq "gf12"} {
-    #    directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -MAP_TO_MODULE GF12_SRAM_SP_2048x32.GF12_SRAM_SP_2048x32
-    #} else {
-    #    directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
-    #}
-    #directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -GEN_EXTERNAL_ENABLE true
-    #directive set /$ACCELERATOR/core/sha2_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/sha256_block:K256.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/sha256_block#1:K256.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/sha256_block#2:K256.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/sha256:h.rom:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/core/sha256:h:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/core/sha256:data:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/core/sha256_block:tmp:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/core/sha256_block#1:tmp:rsc -MAP_TO_MODULE {[Register]}
-    #directive set /$ACCELERATOR/core/sha256_block#2:tmp:rsc -MAP_TO_MODULE {[Register]}
+    if {$TECH eq "gf12"} {
+        #directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -MAP_TO_MODULE GF12_SRAM_SP_2048x32.GF12_SRAM_SP_2048x32
+        directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -MAP_TO_MODULE sram_2048x32.sram_2048x32
+    } else {
+        directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -MAP_TO_MODULE Xilinx_RAMS.BLOCK_1R1W_RBW
+    }
+    directive set /$ACCELERATOR/core/sha2_plm_in.data:rsc -GEN_EXTERNAL_ENABLE true
+    directive set /$ACCELERATOR/core/sha2_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/sha256_block:K256.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/sha256_block#1:K256.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/sha256_block#2:K256.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/sha256:h.rom:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/sha256:h:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/sha256:data:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/sha256_block:tmp:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/sha256_block#1:tmp:rsc -MAP_TO_MODULE {[Register]}
+    directive set /$ACCELERATOR/core/sha256_block#2:tmp:rsc -MAP_TO_MODULE {[Register]}
 
     #directive set /$ACCELERATOR/Te2.rom:rsc -MAP_TO_MODULE {[Register]}
     #directive set /$ACCELERATOR/Te3.rom:rsc -MAP_TO_MODULE {[Register]}
@@ -418,24 +421,24 @@ if {$opt(hsynth)} {
     #directive set /$ACCELERATOR/core/aes_gcm_cipher:L:rsc -MAP_TO_MODULE {[Register]}
     #directive set /$ACCELERATOR/core/aes_gcm_cipher:J:rsc -MAP_TO_MODULE {[Register]}
 
-    directive set /$ACCELERATOR/core/rsa_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/rsa_plm_e.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/rsa_plm_n.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/rsa_plm_r.data:rsc -MAP_TO_MODULE {[Register]}
-    directive set /$ACCELERATOR/core/rsa_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/rsa_plm_in.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/rsa_plm_e.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/rsa_plm_n.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/rsa_plm_r.data:rsc -MAP_TO_MODULE {[Register]}
+    #directive set /$ACCELERATOR/core/rsa_plm_out.data:rsc -MAP_TO_MODULE {[Register]}
 
     # Loops
     directive set /$ACCELERATOR/core/main -MERGEABLE false
 
-    #directive set /$ACCELERATOR/core/SHA1_LOAD_CTRL_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/SHA1_LOAD_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/SHA1_STORE_CTRL_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/SHA1_STORE_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/SHA1_LOAD_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/SHA1_LOAD_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/SHA1_STORE_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/SHA1_STORE_LOOP -MERGEABLE false
 
-    #directive set /$ACCELERATOR/core/SHA2_LOAD_CTRL_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/SHA2_LOAD_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/SHA2_STORE_CTRL_LOOP -MERGEABLE false
-    #directive set /$ACCELERATOR/core/SHA2_STORE_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/SHA2_LOAD_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/SHA2_LOAD_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/SHA2_STORE_CTRL_LOOP -MERGEABLE false
+    directive set /$ACCELERATOR/core/SHA2_STORE_LOOP -MERGEABLE false
 
     #directive set /$ACCELERATOR/core/AES_LOAD_KEY_CTRL_LOOP -MERGEABLE false
     #directive set /$ACCELERATOR/core/AES_LOAD_KEY_LOOP -MERGEABLE false
@@ -446,16 +449,16 @@ if {$opt(hsynth)} {
     #directive set /$ACCELERATOR/core/AES_STORE_CTRL_LOOP -MERGEABLE false
     #directive set /$ACCELERATOR/core/AES_STORE_LOOP -MERGEABLE false
 
-    directive set /$ACCELERATOR/core/RSA_LOAD_IN_CTRL_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/RSA_LOAD_IN_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/RSA_LOAD_E_CTRL_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/RSA_LOAD_E_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/RSA_LOAD_N_CTRL_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/RSA_LOAD_N_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/RSA_LOAD_R_CTRL_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/RSA_LOAD_R_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/RSA_STORE_CTRL_LOOP -MERGEABLE false
-    directive set /$ACCELERATOR/core/RSA_STORE_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_IN_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_IN_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_E_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_E_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_N_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_N_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_R_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_LOAD_R_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_STORE_CTRL_LOOP -MERGEABLE false
+    #directive set /$ACCELERATOR/core/RSA_STORE_LOOP -MERGEABLE false
 
     # Loops performance tracing
 
