@@ -125,53 +125,6 @@ architecture rtl of noc5_mux is
   signal fifo_csr_rcv_rdreq : std_ulogic;
   signal fifo_csr_rcv_wrreq : std_ulogic;
 
-  attribute mark_debug : string;
-
-  attribute mark_debug of noc5_input_port            : signal is "true";
-  attribute mark_debug of noc5_data_void_in          : signal is "true";
-  attribute mark_debug of noc5_stop_out              : signal is "true";
-  attribute mark_debug of noc5_output_port           : signal is "true";
-  attribute mark_debug of noc5_data_void_out         : signal is "true";
-  attribute mark_debug of noc5_stop_in               : signal is "true";
-  attribute mark_debug of noc5_input_port_tile       : signal is "true";
-  attribute mark_debug of noc5_data_void_in_tile     : signal is "true";
-  attribute mark_debug of noc5_stop_out_tile         : signal is "true";
-  attribute mark_debug of noc5_output_port_tile      : signal is "true";
-  attribute mark_debug of noc5_data_void_out_tile    : signal is "true";
-  attribute mark_debug of noc5_stop_in_tile          : signal is "true";
-  attribute mark_debug of noc5_input_port_csr        : signal is "true";
-  attribute mark_debug of noc5_data_void_in_csr      : signal is "true";
-  attribute mark_debug of noc5_stop_out_csr          : signal is "true";
-  attribute mark_debug of noc5_output_port_csr       : signal is "true";
-  attribute mark_debug of noc5_data_void_out_csr     : signal is "true";
-  attribute mark_debug of noc5_stop_in_csr           : signal is "true";
-  attribute mark_debug of noc5_input_port_pm         : signal is "true";
-  attribute mark_debug of noc5_data_void_in_pm       : signal is "true";
-  attribute mark_debug of noc5_stop_out_pm           : signal is "true";
-  attribute mark_debug of noc5_output_port_pm        : signal is "true";
-  attribute mark_debug of noc5_data_void_out_pm      : signal is "true";
-  attribute mark_debug of noc5_stop_in_pm            : signal is "true";
-  attribute mark_debug of noc5_rcv_reg               : signal is "true";
-  attribute mark_debug of noc5_rcv_reg_next          : signal is "true";
-  attribute mark_debug of noc5_snd_reg               : signal is "true";
-  attribute mark_debug of noc5_snd_reg_next          : signal is "true";
-  attribute mark_debug of noc5_input_port_int        : signal is "true";
-  attribute mark_debug of noc5_data_void_in_int      : signal is "true";
-  attribute mark_debug of noc5_stop_out_int          : signal is "true";
-  attribute mark_debug of noc5_output_port_int       : signal is "true";
-  attribute mark_debug of noc5_data_void_out_int     : signal is "true";
-  attribute mark_debug of noc5_stop_in_int           : signal is "true";
-  attribute mark_debug of noc5_input_port_csr_int    : signal is "true";
-  attribute mark_debug of noc5_data_void_in_csr_int  : signal is "true";
-  attribute mark_debug of noc5_stop_out_csr_int      : signal is "true";
-  attribute mark_debug of noc5_output_port_csr_int   : signal is "true";
-  attribute mark_debug of noc5_data_void_out_csr_int : signal is "true";
-  attribute mark_debug of noc5_stop_in_csr_int       : signal is "true";
-  attribute mark_debug of fifo_rcv_rdreq             : signal is "true";
-  attribute mark_debug of fifo_rcv_wrreq             : signal is "true";
-  attribute mark_debug of fifo_csr_rcv_rdreq         : signal is "true";
-  attribute mark_debug of fifo_csr_rcv_wrreq         : signal is "true";
-
 begin
 
   fifo_rcv : fifo0
