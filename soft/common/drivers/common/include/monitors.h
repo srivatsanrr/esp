@@ -13,10 +13,10 @@
 #define ESP_MON_READ_L2_STATS 2
 #define ESP_MON_READ_LLC_STATS 3
 #define ESP_MON_READ_ACC_STATS 4             //requires acc_index
-#define ESP_MON_READ_DVFS_OP 5               //requires tile_no
+#define ESP_MON_READ_DVFS_OP 5               //requires tile_index
 #define ESP_MON_READ_NOC_INJECTS 6
-#define ESP_MON_READ_NOC_QUEUE_FULL_TILE 7   //requires tile_no
-#define ESP_MON_READ_NOC_QUEUE_FULL_PLANE 8  //requires plane_no
+#define ESP_MON_READ_NOC_QUEUE_FULL_TILE 7   //requires tile_index
+#define ESP_MON_READ_NOC_QUEUE_FULL_PLANE 8  //requires noc_index
 
 #define MON_DDR_WORD_TRANSFER_INDEX     0
 #define MON_MEM_COH_REQ_INDEX           1
@@ -82,19 +82,16 @@ typedef struct esp_monitor_vals {
 
 typedef enum esp_monitor_read_mode {
     ESP_MON_READ_ALL,
-    ESP_MON_READ_SINGLE,                //requires tile_no and mon_index
+    ESP_MON_READ_SINGLE,
     ESP_MON_READ_MANY,
  } esp_monitor_mode_t;
 
 typedef struct esp_monitor_args {
     esp_monitor_mode_t read_mode;
     uint16_t read_mask;
-    //tile_no for SINGLE, L2_STATS, NOC_QUEUE_FULL_TILE
-    //acc_index for ACC_STATS
     uint8_t tile_index;
     uint8_t acc_index;
     uint8_t mon_index;
-    //for NOC_QUEUE_FULL_PLANE
     uint8_t noc_index;
 } esp_monitor_args_t;
 
