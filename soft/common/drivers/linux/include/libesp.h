@@ -29,8 +29,6 @@
 #include <esp.h>
 #include <esp_accelerator.h>
 
-#include "monitors.h"
-
 unsigned DMA_WORD_PER_BEAT(unsigned _st);
 
 typedef struct esp_accelerator_thread_info {
@@ -62,11 +60,5 @@ void *esp_alloc(size_t size);
 void esp_run_parallel(esp_thread_info_t* cfg[], unsigned nthreads, unsigned* nacc);
 void esp_run(esp_thread_info_t cfg[], unsigned nacc);
 void esp_free(void *buf);
-unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals);
-esp_monitor_vals_t* esp_monitor_vals_alloc();
-void esp_monitor_free();
-esp_monitor_vals_t esp_monitor_diff(esp_monitor_vals_t vals_start, esp_monitor_vals_t vals_end);
-void esp_monitor_print(esp_monitor_args_t args, esp_monitor_vals_t vals, FILE* fp);
-uint32_t sub_monitor_vals (uint32_t val_start, uint32_t val_end);
 
 #endif /* __ESPLIB_H__ */

@@ -13,7 +13,6 @@
 #endif
 
 #include "esplink.h"
-#include "monitors.h"
 
 #ifndef __ESP_PROBE_H__
 #define __ESP_PROBE_H__
@@ -99,10 +98,6 @@ unsigned ioread32(struct esp_device *dev, unsigned offset);
 void iowrite32(struct esp_device *dev, unsigned offset, unsigned payload);
 void esp_flush(int coherence);
 void esp_p2p_init(struct esp_device *dev, struct esp_device **srcs, unsigned nsrcs);
-unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals);
-esp_monitor_vals_t esp_monitor_diff(esp_monitor_vals_t vals_start, esp_monitor_vals_t vals_end);
-uint32_t sub_monitor_vals (uint32_t val_start, uint32_t val_end);
-void esp_monitor_print(esp_monitor_args_t args, esp_monitor_vals_t vals);
 
 #define esp_get_y(_dev) (YX_MASK_YX & (ioread32(_dev, YX_REG) >> YX_SHIFT_Y))
 #define esp_get_x(_dev) (YX_MASK_YX & (ioread32(_dev, YX_REG) >> YX_SHIFT_X))

@@ -8,6 +8,7 @@ soft-build:
 	@mkdir -p $(BUILD_DRIVERS)/esp
 	@mkdir -p $(BUILD_DRIVERS)/esp_cache
 	@mkdir -p $(BUILD_DRIVERS)/libesp
+	@mkdir -p $(BUILD_DRIVERS)/monitors
 	@mkdir -p $(BUILD_DRIVERS)/probe
 	@mkdir -p $(BUILD_DRIVERS)/test
 	@mkdir -p $(BUILD_DRIVERS)/utils/baremetal

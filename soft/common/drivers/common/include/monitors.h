@@ -1,6 +1,17 @@
 #ifndef MONITORS_H
 #define MONITORS_H
 
+#include <fcntl.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+
+#ifdef LINUX
+#include <sys/mman.h>
+#include <stdlib.h>
+#endif
+
 #include "soc_defs.h"
 
 #define DVFS_OP_POINTS 4
@@ -100,10 +111,18 @@ typedef struct esp_mon_alloc_node {
     struct esp_mon_alloc_node *next;
 } esp_mon_alloc_node_t;
 
-void mmap_monitors();
-unsigned int read_monitor(int tile_no, int mon_no);
-void write_burst_reg(int tile_no, int val);
 esp_monitor_vals_t esp_monitor_diff(esp_monitor_vals_t vals_start, esp_monitor_vals_t vals_end);
 unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals);
 uint32_t sub_monitor_vals (uint32_t val_start, uint32_t val_end);
+
+#ifdef LINUX
+esp_monitor_vals_t* esp_monitor_vals_alloc();
+void esp_monitor_free();
+void esp_monitor_print(esp_monitor_args_t args, esp_monitor_vals_t vals, FILE *fp);
+#define print_mon(...) fprintf(fp, __VA_ARGS__)
+#else
+void esp_monitor_print(esp_monitor_args_t args, esp_monitor_vals_t vals);
+#define print_mon(...) printf(__VA_ARGS__)
+#endif
+
 #endif //MONITORS_H
