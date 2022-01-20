@@ -21,7 +21,6 @@ INCDIR += -I$(DESIGN_PATH)
 
 ifeq ("$(CPU_ARCH)", "leon3")
 CFLAGS += -O3
-CFLAGS += -mcpu=v9
 CFLAGS += -fno-builtin-cos -fno-builtin-sin
 CFLAGS += -L../probe
 CROSS_COMPILE ?= sparc-elf-

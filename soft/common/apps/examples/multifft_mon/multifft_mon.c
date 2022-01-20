@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 	//calculate differnce, accounting for overflow
 	unsigned int ddr_accesses_diff;
 	ddr_accesses_diff = sub_monitor_vals(ddr_accesses_start, ddr_accesses_end);
-	printf("Off-chip memory accesses: %d\n", ddr_accesses_diff);
+	printf("\tOff-chip memory accesses: %d\n", ddr_accesses_diff);
 
 	errors = validate_buffer(&buf[0][out_offset], gold[0]);
 

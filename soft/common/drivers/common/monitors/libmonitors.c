@@ -1,9 +1,4 @@
-#include "soc_locs.h"
 #include "monitors.h"
-
-void *monitor_base_ptr = NULL;
-void *mon_alloc_head = NULL;
-int mapped = 0;
 
 void mem_barrier()
 {
@@ -15,48 +10,59 @@ void mem_barrier()
 
 }
 
+#ifdef LINUX
+void *mon_alloc_head = NULL;
+void *monitor_base_ptr = NULL;
+int mapped = 0;
+
 void mmap_monitors()
 {
-    #ifdef LINUX
-    int fd = open("/dev/mem", O_RDWR);
+	int fd = open("/dev/mem", O_RDWR);
 	monitor_base_ptr = mmap(NULL, SOC_ROWS * SOC_COLS * MONITOR_TILE_SIZE
 							, PROT_READ | PROT_WRITE, MAP_SHARED, fd, MONITOR_BASE_ADDR);
 	close(fd);
-    #else
-    monitor_base_ptr = (void *) MONITOR_BASE_ADDR;
-    #endif
 }
 
 void munmap_monitors()
 {
-    #ifdef LINUX
-    munmap(monitor_base_ptr, SOC_ROWS * SOC_COLS * MONITOR_TILE_SIZE);
-    #endif
+	munmap(monitor_base_ptr, SOC_ROWS * SOC_COLS * MONITOR_TILE_SIZE);
 }
+#endif
 
 unsigned int read_monitor(int tile_no, int mon_no)
 {
 	unsigned int offset = (MONITOR_TILE_SIZE / sizeof(unsigned int)) * tile_no;
+#ifdef LINUX
 	unsigned int *addr = ((unsigned int *) monitor_base_ptr) + offset + mon_no + 1;
+#else
+	unsigned int *addr = ((unsigned int *) MONITOR_BASE_ADDR) + offset + mon_no + 1;
+#endif
 	return *addr;
 }
 
 void write_burst_reg(int tile_no, int val)
 {
 	unsigned int offset = (MONITOR_TILE_SIZE / sizeof(unsigned int)) * tile_no;
+#ifdef LINUX
 	unsigned int *addr = ((unsigned int *) monitor_base_ptr) + offset;
+#else
+	unsigned int *addr = ((unsigned int *) MONITOR_BASE_ADDR) + offset;
+#endif
 	*addr = val;
 }
 
 unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals)
 {
-	int t, p, q;
-	unsigned int tile;
+#include "soc_locs.h"
 
+	int tile, t, p, q;
+
+#ifdef LINUX
 	if (!mapped) {
 		mmap_monitors();
 		mapped = 1;
 	}
+#endif
 
 	if (args.read_mode == ESP_MON_READ_SINGLE){
 
@@ -67,9 +73,9 @@ unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals)
 		for (t = 0; t < SOC_NTILES; t++)
 			write_burst_reg(t, 1);
 
-        mem_barrier();
+		mem_barrier();
 
-        //ddr accesses
+		//ddr accesses
 		for (t = 0; t < SOC_NMEM; t++)
 			vals->ddr_accesses[t] =
 				read_monitor(mem_locs[t].row * SOC_COLS + mem_locs[t].col, MON_DDR_WORD_TRANSFER_INDEX);
@@ -140,9 +146,9 @@ unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals)
 					vals->noc_queue_full[t][p][q] =
 						read_monitor(t, MON_NOC_QUEUES_FULL_BASE_INDEX + p * NOC_QUEUES + q);
 
-        mem_barrier();
+		mem_barrier();
 
-        for (t = 0; t < SOC_NTILES; t++)
+		for (t = 0; t < SOC_NTILES; t++)
 			write_burst_reg(t, 0);
 
 		return 0;
@@ -153,7 +159,7 @@ unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals)
 		for (t = 0; t < SOC_NTILES; t++)
 			write_burst_reg(t, 1);
 
-        mem_barrier();
+		mem_barrier();
 
 		//ddr accesses
 		if (args.read_mask & (1 << ESP_MON_READ_DDR_ACCESSES))
@@ -237,9 +243,9 @@ unsigned int esp_monitor(esp_monitor_args_t args, esp_monitor_vals_t *vals)
 					vals->noc_queue_full[t][args.noc_index][q] =
 						read_monitor(t, MON_NOC_QUEUES_FULL_BASE_INDEX + args.noc_index * NOC_QUEUES + q);
 
-        mem_barrier();
+		mem_barrier();
 
-        for (t = 0; t < SOC_NTILES; t++)
+		for (t = 0; t < SOC_NTILES; t++)
 			write_burst_reg(t, 0);
 
 		 return 0;
@@ -257,6 +263,8 @@ uint32_t sub_monitor_vals (uint32_t val_start, uint32_t val_end)
 
 esp_monitor_vals_t esp_monitor_diff(esp_monitor_vals_t vals_start, esp_monitor_vals_t vals_end)
 {
+#include "soc_locs.h"
+
 	esp_monitor_vals_t vals_diff;
 	int t, p, q, tile;
 
@@ -355,10 +363,15 @@ void esp_monitor_print(esp_monitor_args_t args, esp_monitor_vals_t vals, FILE *f
 void esp_monitor_print(esp_monitor_args_t args, esp_monitor_vals_t vals)
 #endif
 {
-	int t, p, q, tile;
-	printf("Writing esp_monitor stats to specified file...\n");
+#include "soc_locs.h"
 
-	print_mon( "***************************************************\n");
+	int t, p, q, tile;
+
+#ifdef LINUX
+	printf("\tWriting esp_monitor stats to specified file...\n");
+#endif
+
+	print_mon( "\n***************************************************\n");
 	print_mon( "******************ESP MONITOR STATS****************\n");
 	print_mon( "***************************************************\n");
 

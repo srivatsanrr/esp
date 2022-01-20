@@ -1864,10 +1864,6 @@ def print_soc_defines(fp, esp_config, soc):
   fp.write("#endif /* __SOC_DEFS_H__ */\n")
 
 def print_soc_locations(fp, esp_config, soc):
-  fp.write("#ifndef __SOC_LOCS_H__\n")
-  fp.write("#define __SOC_LOCS_H__\n")
-  fp.write("typedef struct soc_loc{\n\tint row;\n\tint col;\n} soc_loc_t;\n\n")
-
   fp.write("soc_loc_t cpu_locs[" + str(esp_config.ncpu) + "] = {")
   for i in range(0, esp_config.ntiles):
     t = esp_config.tiles[i]
@@ -1886,22 +1882,22 @@ def print_soc_locations(fp, esp_config, soc):
             fp.write(", ")
   fp.write("};\n\n")
 
-  fp.write("soc_loc_t contig_alloc_locs[" + str(len(esp_config.contig_alloc_ddr)) + "] = {")
-  for i in range(0, esp_config.ntiles):
-    t = esp_config.tiles[i]
-    if t.type == "mem" and t.mem_id in esp_config.contig_alloc_ddr:
-        fp.write("{" + str(t.row) + "," + str(t.col) + "}")
-        if not t.mem_id == esp_config.nmem - 1:
-            fp.write(", ")
-  fp.write("};\n\n")
+  #fp.write("soc_loc_t contig_alloc_locs[" + str(len(esp_config.contig_alloc_ddr)) + "] = {")
+  #for i in range(0, esp_config.ntiles):
+  #  t = esp_config.tiles[i]
+  #  if t.type == "mem" and t.mem_id in esp_config.contig_alloc_ddr:
+  #      fp.write("{" + str(t.row) + "," + str(t.col) + "}")
+  #      if not t.mem_id == esp_config.nmem - 1:
+  #          fp.write(", ")
+  #fp.write("};\n\n")
 
-  fp.write("soc_loc_t io_loc = ")
-  for i in range(0, esp_config.ntiles):
-    t = esp_config.tiles[i]
-    if t.type == "misc":
-        fp.write("{" + str(t.row) + "," + str(t.col) + "};")
-        break
-  fp.write("\n\n")
+  #fp.write("soc_loc_t io_loc = ")
+  #for i in range(0, esp_config.ntiles):
+  #  t = esp_config.tiles[i]
+  #  if t.type == "misc":
+  #      fp.write("{" + str(t.row) + "," + str(t.col) + "};")
+  #      break
+  #fp.write("\n\n")
 
   if esp_config.nacc > 0:
       acc_counts = {}
@@ -1929,8 +1925,6 @@ def print_soc_locations(fp, esp_config, soc):
             if not t.acc.id == esp_config.nacc - 1:
                 fp.write(", ")
       fp.write("};\n")
-  fp.write("#endif /* __SOC_LOCS_H__ */\n")
-
 
 def print_devtree(fp, soc, esp_config):
 
